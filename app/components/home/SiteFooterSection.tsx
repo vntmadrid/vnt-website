@@ -4,7 +4,7 @@ import VntLogo from "@/public/VNT black logo.svg";
 export default function SiteFooterSection() {
   return (
     <footer>
-      <div className="p-12">
+      <div className="p-12 lg:flex lg:flex-row lg:justify-between">
         <Image
           src={VntLogo}
           alt="Vnt Logo"
