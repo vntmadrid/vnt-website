@@ -10,7 +10,7 @@ export default function CoffeeGallerySection() {
                 {/* Child 1 - title */}
                 <div className="p-3 lg:p-6">
                     <p className="lg:text-2xl">Coffee_gallery</p>
-                    <p className="text-2xl lg:text-[52px] font-medium lg:font-normal lg:leading-16">
+                    <p className="text-2xl lg:text-[52px] font-medium lg:leading-16">
                         The smell of coffee. The pull of art. A space that was
                         always meant to feel like this.
                     </p>
@@ -24,7 +24,7 @@ export default function CoffeeGallerySection() {
                             it still does.
                         </p>
                     </div>
-                    <div className="p-1 px-2 border-2 text-md lg:text-2xl font-semibold">
+                    <div className="p-1 px-2 border-2 text-lg lg:text-2xl font-semibold">
                         <p>View Menu →</p>
                     </div>
                 </div>

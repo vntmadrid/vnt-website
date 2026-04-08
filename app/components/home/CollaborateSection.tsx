@@ -46,7 +46,7 @@ export default function CollaborateSection() {
                     <p className="mb-2 lg:mb-0 text-4xl lg:text-[48px] font-semibold">
                         Got Something
                         <br className="hidden lg:block" />
-                        in Mind?
+                        {" "} in Mind?
                     </p>
                     <div className="">
                         <p className="mb-6 lg:mb-4 text-xl lg:text-right">

@@ -4,7 +4,7 @@ import { useState, type ChangeEvent, type FormEvent } from "react";
 import {
   talkToUsSchema,
   type TalkToUsInput,
-} from "@/lib/validation/talkToUsSchema";
+} from "@/app/lib/validation/talkToUsSchema";
 
 const initialFormData: TalkToUsInput = {
   name: "",
@@ -69,7 +69,7 @@ export default function TalkToUsForm() {
   };
 
   return (
-    <section className="mt-8 text-white p-4">
+    <section className=" text-white p-4">
       <h2 className="mb-4 text-4xl font-semibold">Collaborate_</h2>
       <form className="flex flex-col gap-2" onSubmit={handleSubmit}>
         <div className="flex w-full gap-2">

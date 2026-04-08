@@ -5,16 +5,18 @@ import EventsSection from "./components/home/EventsSection";
 import FoundersSection from "./components/home/FoundersSection";
 import IntroSection from "./components/home/IntroSection";
 import SiteFooterSection from "./components/home/SiteFooterSection";
+import EventSpaces from "./components/home/EventSpaces";
 
 export default function Home() {
-  return (
-    <>
-      <IntroSection />
-      <CoffeeGallerySection />
-      <ConceptStoreSection />
-      <EventsSection />
-      <CollaborateSection />
-      <FoundersSection />
-    </>
-  );
+    return (
+        <>
+            <IntroSection />
+            {/* <CoffeeGallerySection /> */}
+            {/*    <ConceptStoreSection /> */}
+            <EventSpaces />
+            <EventsSection />
+            <CollaborateSection />
+            <FoundersSection />
+        </>
+    );
 }

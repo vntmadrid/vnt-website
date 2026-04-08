@@ -9,7 +9,7 @@ export default function ConceptStoreSection() {
             <div className="bg-white text-black lg:max-w-[570px] p-3 lg:p-6 lg:flex lg:flex-col lg:justify-between">
                 <div className="">
                     <p className="lg:text-2xl">Concept_store</p>
-                    <p className="mb-3 text-2xl font-medium lg:text-[52px] lg:font-normal lg:leading-16">
+                    <p className="mb-3 text-2xl font-medium lg:text-[52px] lg:leading-16">
                         Every visit, a different world. Design, fashion, and
                         art, thoughtfully arranged, always evolving.
                     </p>
