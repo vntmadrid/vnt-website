@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { talkToUsSchema } from "@/lib/validation/talkToUsSchema";
+import { talkToUsSchema } from "@/app/lib/validation/talkToUsSchema";
 
 export async function POST(request: Request) {
   try {
