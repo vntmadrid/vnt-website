@@ -22,7 +22,7 @@ const collaborateOffers = [
 
 export default function CollaborateSection() {
     return (
-        <div className="flex w-full bg-cover bg-center bg-no-repeat font-sans">
+        <div id="collaborate" className="flex w-full bg-cover bg-center bg-no-repeat font-sans">
             <div className="w-full bg-white text-black">
                 <div className="p-6 lg:p-12">
                     <p className="mb-4 lg:mb-10 text-4xl font-semibold lg:text-[58px]">

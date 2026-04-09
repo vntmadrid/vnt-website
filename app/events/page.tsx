@@ -39,9 +39,7 @@ export default function EventsPage() {
                 ))}
             </ul>
             <div className="flex justify-center">
-
-
-                <div className="max-w-[512px]">
+                <div className="w-1/3">
                     <TalkToUsForm />
                 </div>
             </div>

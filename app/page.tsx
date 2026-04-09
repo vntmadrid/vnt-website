@@ -6,10 +6,12 @@ import FoundersSection from "./components/home/FoundersSection";
 import IntroSection from "./components/home/IntroSection";
 import SiteFooterSection from "./components/home/SiteFooterSection";
 import EventSpaces from "./components/home/EventSpaces";
+import HomeStickyHeader from "./components/home/HomeStickyHeader";
 
 export default function Home() {
     return (
         <>
+            <HomeStickyHeader />
             <IntroSection />
             {/* <CoffeeGallerySection /> */}
             {/*    <ConceptStoreSection /> */}

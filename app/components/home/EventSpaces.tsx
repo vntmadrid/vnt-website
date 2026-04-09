@@ -68,7 +68,7 @@ export default function CafeStoryScroll() {
     );
 
     return (
-        <div ref={containerRef} className="relative h-[300vh] bg-black">
+        <div ref={containerRef} id="spaces" className="relative h-[300vh] bg-black">
             <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center">
                 {/* BACKGROUND 1: Fades OUT in the middle of the scroll */}
                 <motion.div
@@ -96,7 +96,7 @@ export default function CafeStoryScroll() {
 
                 {/* HOVERING DIV (Content Panel) */}
                 <motion.div
-                    className="absolute right-[5%] lg:right-[1%] z-20 bg-white text-black w-[90%] lg:w-[570px] lg:flex lg:flex-col lg:justify-between font-sans lg:h-[95vh]"
+                    className="absolute right-[5%] lg:right-[1%] z-20 bg-white text-black w-[90%] lg:w-[35vw] lg:flex lg:flex-col lg:justify-between font-sans lg:h-[95vh]"
                     style={{ x: panelX }}
                 >
                     {/* Child 1 - title */}
@@ -145,7 +145,7 @@ export default function CafeStoryScroll() {
                                     We think it still does.
                                 </p>
                             </div>
-                            <div className="p-1 px-2 border-2 text-lg lg:text-2xl font-semibold">
+                            <div className="p-1 px-2 border-2 text-lg lg:text-2xl lg:ml-2 font-semibold">
                                 <p className="whitespace-nowrap">View Menu →</p>
                             </div>
                         </motion.div>
