@@ -35,7 +35,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} antialiased`}
       >
         {children}
-        <SiteFooterSection/>
+        {/* <SiteFooterSection/> */}
       </body>
     </html>
   );
