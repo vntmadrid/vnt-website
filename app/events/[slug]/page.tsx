@@ -119,7 +119,7 @@ export default async function EventPage({ params }: EventPageProps) {
     }
 
     return (
-        <div className="">
+        <div className="bg-black">
             {/* Header */}
             <div className="flex flex-row justify-between items-center p-4">
                 <Link href={"/"}>
@@ -129,7 +129,7 @@ export default async function EventPage({ params }: EventPageProps) {
                         className="brightness-0 invert h-14 w-fit"
                     />
                 </Link>
-                <Link href="/events" className="text-2xl font-semibold">
+                <Link href="/events" className="text-2xl font-semibold text-white">
                     ← PAST EVENTS
                 </Link>
             </div>
@@ -154,7 +154,7 @@ export default async function EventPage({ params }: EventPageProps) {
             <div className="lg:flex lg:flex-row lg:p-4">
                 <div className="p-2">
                     {/* Event description */}
-                    <p className="mb-2 line text-base/8 lg:w-[80%] lg:text-[24px] lg:leading-12 lg:mb-8">
+                    <p className="mb-2 line text-base/8 text-white lg:w-[80%] lg:text-[24px] lg:leading-12 lg:mb-8">
                         {event.description}
                     </p>
                     {/* Image block */}
