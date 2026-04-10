@@ -13,7 +13,7 @@ const events = [
 
 export default function EventsPage() {
     return (
-        <main className="">
+        <main className="bg-black text-white">
             <div className="flex flex-row justify-between items-center p-4 mb-24">
                 <Link href={"/"}>
                     <Image

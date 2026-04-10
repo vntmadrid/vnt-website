@@ -24,6 +24,7 @@ const poppins = Poppins({
 export const metadata: Metadata = {
     title: "VNT Madrid",
     description: "The official website for VNT Madrid",
+    themeColor: "#000000",
 };
 
 export default function RootLayout({
@@ -33,7 +34,9 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
-            <body className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} antialiased`}>
+            <body
+                className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} antialiased bg-black`}
+            >
                 {children}
                 <Analytics />
                 <SpeedInsights />
