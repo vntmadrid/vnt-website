@@ -40,7 +40,7 @@ export default function RootLayout({
                 {children}
                 <Analytics />
                 <SpeedInsights />
-                {/* <SiteFooterSection/> */}
+                <SiteFooterSection/>
             </body>
         </html>
     );

@@ -13,19 +13,48 @@ const events = [
     { slug: "fashion-night", title: "Fashion Night" },
 ];
 
+// Variants for the parent container to handle the stagger effect
+const containerVariants = {
+    initial: {},
+    animate: {
+        transition: {
+            // Delay the cards slightly so the title and separator can animate first
+            delayChildren: 0.2,
+            // Time between each card animating in
+            staggerChildren: 0.15,
+        },
+    },
+};
+
+// Variants for each individual card
+const cardVariants = {
+    initial: {
+        opacity: 0,
+        y: 60, // Start slightly lower
+        scale: 0.95, // Slightly scaled down for a subtle "pop" effect
+    },
+    animate: {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        transition: {
+            type: "spring",
+            damping: 20,
+            stiffness: 100,
+        },
+    },
+};
+
 export default function EventsSection() {
     const sectionRef = useRef(null);
     const [isTriggered, setIsTriggered] = useState(false);
 
     const { scrollYProgress } = useScroll({
         target: sectionRef,
-        // Progress begins (0) when the top of the section hits 25% from the top of the viewport
-        // Progress ends (1) when the top of the section hits 0% (the top of the viewport)
         offset: ["start 60%", "start 0%"],
     });
 
     useMotionValueEvent(scrollYProgress, "change", (latest) => {
-        // As soon as progress is greater than 0, it has crossed the 25% line
         if (latest > 0) {
             setIsTriggered(true);
         } else {
@@ -35,11 +64,11 @@ export default function EventsSection() {
 
     return (
         <div ref={sectionRef} id="events" className="relative -mt-11 lg:-mt-16">
-            {/* EVENTS_ BAR — overlaps section above */}
+            {/* EVENTS_ BAR */}
             <motion.div
                 initial={{ y: 80 }}
                 animate={isTriggered ? { y: 0 } : { y: 80 }}
-                transition={{ duration: 0.2, ease: "easeOut" }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
                 className="relative z-10 flex items-end justify-between px-4 lg:px-8 lg:py-0"
             >
                 <h2 className="font-sans text-3xl px-4 lg:px-6 lg:pr-5.5 pt-2 lg:pt-4 lg:-mb-2 font-bold uppercase text-white bg-mist-900 lg:text-5xl">
@@ -55,56 +84,57 @@ export default function EventsSection() {
                 </motion.div>
             </motion.div>
 
-            {/* <div className="relative z-10 flex items-end justify-between px-4 lg:px-8 lg:py-0">
-                <h2 className="font-sans text-3xl px-4 lg:px-6 lg:pr-5.5 pt-2 lg:pt-4 lg:-mb-2 font-bold uppercase text-white bg-mist-900 lg:text-5xl">
-                    EVENTS_
-                </h2>
-                <Link
-                    href="/events"
-                    className="font-sans text-2xl px-3 lg:px-4 pt-1 lg:pt-2 -mb-1.5 lg:text-3xl font-bold uppercase text-white bg-mist-900 "
-                >
-                    VIEW ALL
-                </Link>
-            </div> */}
-
             {/* BUTTONS SEPARATOR */}
             <motion.div
                 initial={{ paddingTop: "88px" }}
                 animate={
                     isTriggered ? { paddingTop: "0px" } : { paddingTop: "88px" }
                 }
-                transition={{ duration: 0.2, ease: "easeOut" }}
-                className="h-0.5 pb-6 lg:pb-10 bg-mist-900"
+                transition={{ duration: 0.4, ease: "easeOut" }}
+                className="h-0.5 pb-2 lg:pb-6 bg-mist-900"
             />
 
-            {/* <div className="h-0.5 pb-6 lg:pb-10 bg-mist-900" /> */}
-            {/* //! When i come back animate the top padding, and then animate the y values of the title and button */}
             {/* CARDS ROW */}
-            <div
-                className="bg-mist-900 px-4 pb-7 lg:px-8 lg:pb-10 overflow-x-auto [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-white [scrollbar-color:white_transparent] [scrollbar-width:medium]"
-            >
-                <div className="flex gap-5 lg:gap-6 w-max">
+            <div className="bg-mist-900 px-4 pt-4 pb-7 lg:px-8 lg:pb-10 overflow-x-auto overflow-y-hidden [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-white [scrollbar-color:white_transparent] [scrollbar-width:medium]">
+                <motion.div
+                    className="flex gap-5 lg:gap-6 w-max"
+                    variants={containerVariants}
+                    initial="initial"
+                    animate={isTriggered ? "animate" : "initial"}
+                >
                     {events.map((event) => (
-                        <Link
+                        <motion.div
                             key={event.slug}
-                            href={`/events/${event.slug}`}
-                            className="h-115 w-75 shrink-0 bg-white text-black lg:h-155 lg:w-117.5"
+                            variants={cardVariants}
+                            className="shrink-0"
+                            // Adding a subtle hover effect to make the cards feel interactive
+                            whileHover={{
+                                y: -8,
+                                transition: { duration: 0.2 },
+                            }}
                         >
-                            <div className="flex h-full flex-col items-center">
-                                <div className="w-full min-w-0 p-3 lg:p-5">
-                                    <p className="w-full min-w-0 truncate text-center font-semibold text-2xl lg:text-5xl uppercase">
-                                        {event.title}
-                                    </p>
+                            <Link
+                                href={`/events/${event.slug}`}
+                                className="block h-115 w-75 bg-white text-black lg:h-155 lg:w-117.5 overflow-hidden"
+                            >
+                                <div className="flex h-full flex-col items-center">
+                                    <div className="w-full min-w-0 p-3 lg:p-5">
+                                        <p className="w-full min-w-0 truncate text-center font-semibold text-2xl lg:text-5xl uppercase">
+                                            {event.title}
+                                        </p>
+                                    </div>
+                                    <div className="relative h-full w-full overflow-hidden">
+                                        <Image
+                                            className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+                                            src={ConceptStoreBg}
+                                            alt={event.title}
+                                        />
+                                    </div>
                                 </div>
-                                <Image
-                                    className="h-full w-full object-cover"
-                                    src={ConceptStoreBg}
-                                    alt={event.title}
-                                />
-                            </div>
-                        </Link>
+                            </Link>
+                        </motion.div>
                     ))}
-                </div>
+                </motion.div>
             </div>
         </div>
     );

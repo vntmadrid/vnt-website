@@ -12,15 +12,15 @@ import ComingSoonPage from "./components/ComingSoonPage";
 export default function Home() {
     return (
         <>
-            <ComingSoonPage />
-            {/* <HomeStickyHeader />
-            <IntroSection /> */}
+            {/* <ComingSoonPage /> */}
+            <HomeStickyHeader />
+            <IntroSection />
             {/* <CoffeeGallerySection /> */}
             {/*    <ConceptStoreSection /> */}
-            {/* <EventSpaces />
+            <EventSpaces />
             <EventsSection />
             <CollaborateSection />
-            <FoundersSection /> */}
+            <FoundersSection />
         </>
     );
 }

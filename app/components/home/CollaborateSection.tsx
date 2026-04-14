@@ -57,10 +57,10 @@ export default function CollaborateSection() {
 
                         <Link
                             href={"events"}
-                            className="flex flex-row justify-between border-4 p-2 text-2xl font-semibold lg:w-fit lg:ml-auto"
+                            className="group flex flex-row justify-between border-4 border-white p-2 text-2xl font-semibold lg:w-fit lg:ml-auto transition-all duration-300 hover:bg-white hover:text-black active:scale-95"
                         >
                             <p>Let's Talk </p>
-                            <p>→</p>
+                            <p className="transition-transform duration-300 group-hover:translate-x-1">→</p>
                         </Link>
                     </div>
                 </div>
