@@ -8,7 +8,23 @@ import VntConcrete from "@/public/images/VNTconcrete.jpg";
 import { motion } from "motion/react";
 import { useEffect, useState } from "react";
 
-export default function IntroSection() {
+interface IntroSectionProps {
+    leftTitle?: string;
+    leftBody?: string;
+    rightTitle?: string;
+    rightBody?: string;
+    backgroundImage?: string;
+    featuredImage?: string;
+}
+
+export default function IntroSection({
+    leftTitle,
+    leftBody,
+    rightTitle,
+    rightBody,
+    backgroundImage,
+    featuredImage,
+}: IntroSectionProps) {
     const [isAnimating, setIsAnimating] = useState(true);
 
     useEffect(() => {
@@ -55,7 +71,7 @@ export default function IntroSection() {
         <div className="relative flex min-h-screen items-center justify-center overflow-hidden p-5 pt-8 font-sans">
             <motion.div
                 className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-                style={{ backgroundImage: `url(${BgConcrete.src})` }}
+                style={{ backgroundImage: `url(${BgConcrete.src || backgroundImage})` }}
                 initial={{ scale: 1.5, opacity: 0, filter: "blur(10px)" }}
                 animate={{ scale: 1, opacity: 1, filter: "none" }}
                 transition={{
@@ -87,15 +103,9 @@ export default function IntroSection() {
                 {/* left side (desktop only) */}
                 <div className="hidden lg:block text-center w-[200px]">
                     <p className="text-[20px] font-semibold mb-2">
-                        VNT COFFEE_GALLERY
+                        {leftTitle}
                     </p>
-                    <p className="text-[16px]">
-                        a space where design, art, and specialty coffee come
-                        together. Located in a former electricity house, VNT
-                        coffee_gallery was conceived as a living gallery a place
-                        where creativity, craftsmanship, and community naturally
-                        connect.
-                    </p>
+                    <p className="text-[16px]">{leftBody}</p>
                 </div>
                 {/* center div */}
                 <div className="lg:max-w-[420px]">
@@ -109,8 +119,10 @@ export default function IntroSection() {
                     </div> */}
                     {/* Center img */}
                     <Image
-                        src={VntConcrete}
+                        src={featuredImage || VntConcrete}
                         alt="Initial artwork"
+                        width={420}
+                        height={420}
                         className="w-105 h-105 object-cover"
                     />
                     {/* Bottom text */}
@@ -135,15 +147,9 @@ export default function IntroSection() {
                 {/* right side (desktop only) */}
                 <div className="hidden lg:block text-center w-[200px]">
                     <p className="text-[20px] font-semibold mb-2">
-                        VNT CONCEPT_STORE
+                        {rightTitle}
                     </p>
-                    <p className="text-[16px]">
-                        A 90 m² hybrid space conceived as a living platform for
-                        brands and creators. Hosting pop-ups, exhibitions,
-                        launches, talks, and gatherings, VNT+ offers a flexible
-                        environment where ideas, products, and communities meet
-                        through shared sensibilities.
-                    </p>
+                    <p className="text-[16px]">{rightBody}</p>
                 </div>
             </motion.div>
         </div>
