@@ -56,7 +56,7 @@ export default function CollaborateSection({ data }: { data?: CollaborateSection
         <div id="collaborate" className="flex w-full bg-cover bg-center bg-no-repeat font-sans">
             <div className="w-full bg-white text-black">
                 <div className="p-6 lg:p-12">
-                    <p className="mb-4 lg:mb-10 text-4xl font-semibold lg:text-[58px]">
+                    <p className="mb-4 lg:mb-10 text-4xl font-semibold lg:text-[58px] uppercase">
                         {displayTitle}
                     </p>
                     <div className="flex flex-col gap-4 lg:flex-row lg:justify-between">

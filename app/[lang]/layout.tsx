@@ -20,7 +20,7 @@ export default async function LangLayout({ children, params }: { children: React
     return (
         <>
             {children}
-            <SiteFooterSection data={footerData} />
+            <SiteFooterSection data={footerData} lang={lang} />
         </>
     );
 }

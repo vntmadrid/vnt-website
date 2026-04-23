@@ -1,19 +1,58 @@
 import Link from "next/link";
 import Image from "next/image";
-import VNTlogo from "@/public/VNT black logo.svg";
 import ImagePlaceholder from "@/public/images/BgConcrete.jpg";
 import EventInfoBlock from "@/app/components/events/EventInfoBlock";
+import EventsHeader from "@/app/components/events/EventsHeader";
 import { client } from "@/sanity/lib/client";
 import { notFound } from "next/navigation";
+import { ArrowRight } from "lucide-react";
 
 type EventPageProps = {
-    params: Promise<{ lang: 'en' | 'es'; slug: string }>;
+    params: Promise<{ lang: "en" | "es"; slug: string }>;
 };
 
 export default async function EventPage(props: EventPageProps) {
     const params = await props.params;
     const lang = params.lang;
     const slug = params.slug;
+    const t =
+        lang === "es"
+            ? {
+                  eventImageAlt: "Imagen del evento",
+                  artistLabel: "Artista",
+                  visitArtistSite: "Visitar sitio del artista",
+                  typeLabel: "Tipo",
+                  spaceLabel: "Espacio",
+                  durationLabel: "Duracion",
+                  collaborateLabel: "Quieres mostrar tu trabajo?",
+                  collaborateTitle:
+                      "Trabajamos con artistas, disenadores y marcas.",
+                  collaborateCta: "COLABORA CON NOSOTROS",
+                  nextEventLabel: "Siguiente evento",
+              }
+            : {
+                  eventImageAlt: "Event Image",
+                  artistLabel: "Artist",
+                  visitArtistSite: "Visit Artist Site",
+                  typeLabel: "Type",
+                  spaceLabel: "Space",
+                  durationLabel: "Duration",
+                  collaborateLabel: "Want to show your work?",
+                  collaborateTitle:
+                      "We work with artists, designers, and brands.",
+                  collaborateCta: "COLLABORATE WITH US",
+                  nextEventLabel: "Next event",
+              };
+
+    const getSpaceLabel = (space: string | null) => {
+        if (space === "VNT Events_Space") {
+            return lang === "es" ? "Espacio de Eventos VNT" : "VNT Events Space";
+        }
+        if (space === "VNT Coffee_Gallery") {
+            return lang === "es" ? "Galeria Cafe VNT" : "VNT Coffee Gallery";
+        }
+        return space;
+    };
 
     // Fetch the current event and also fetch adjacent events to calculate next event
     const query = `{
@@ -21,6 +60,10 @@ export default async function EventPage(props: EventPageProps) {
             "title": title[$lang],
             "description": description[$lang],
             "coverImageUrl": coverPhoto.asset->url,
+            "duration": {
+                "title": duration.title[$lang],
+                "range": duration.range[$lang]
+            },
             "artist": {
                 "name": artist.name,
                 "description": artist.description[$lang],
@@ -35,57 +78,51 @@ export default async function EventPage(props: EventPageProps) {
         },
         "allEvents": *[_type == "event"] | order(_createdAt asc) {
             "slug": slug.current,
-            "title": title[$lang]
+            "title": title[$lang],
+            "eventType": typeInfo.title[$lang],
+            "eventSpace": space
         }
     }`;
 
     const data = await client.fetch(query, { slug, lang });
-    
+
     if (!data || !data.event) {
         notFound();
     }
 
     const event = data.event;
     const allEvents = data.allEvents || [];
-    
+
     let nextEventSlug = null;
     let nextEventTitle = null;
+    let nextEventType = null;
+    let nextEventSpace = null;
 
     if (allEvents.length > 1) {
-        const currentIndex = allEvents.findIndex((e: { slug: string, title: string }) => e.slug === slug);
+        const currentIndex = allEvents.findIndex(
+            (e: { slug: string; title: string }) => e.slug === slug,
+        );
         if (currentIndex !== -1) {
             const nextIndex = (currentIndex + 1) % allEvents.length;
             nextEventSlug = allEvents[nextIndex].slug;
             nextEventTitle = allEvents[nextIndex].title;
+            nextEventType = allEvents[nextIndex].eventType;
+            nextEventSpace = allEvents[nextIndex].eventSpace;
         }
     }
 
-    const galleryPhotos = event.gallery || [];
-    const photo1 = galleryPhotos[0] || ImagePlaceholder;
-    const photo2 = galleryPhotos[1] || ImagePlaceholder;
-    const photo3 = galleryPhotos[2] || ImagePlaceholder;
+    const galleryPhotos: string[] = (event.gallery || []).filter(Boolean);
+    const hasSingleGalleryPhoto = galleryPhotos.length === 1;
 
     return (
         <div className="bg-black">
-            {/* Header */}
-            <div className="flex flex-row justify-between items-center p-4">
-                <Link href={`/${lang}`}>
-                    <Image
-                        src={VNTlogo}
-                        alt={"VntLogo"}
-                        className="brightness-0 invert h-14 w-fit"
-                    />
-                </Link>
-                <Link href={`/${lang}/events`} className="text-2xl font-semibold text-white">
-                    ← PAST EVENTS
-                </Link>
-            </div>
+            <EventsHeader lang={lang} isDetailPage />
 
             {/* Bg image */}
             <div className="relative w-full overflow-hidden leading-none">
                 <Image
                     src={event.coverImageUrl || ImagePlaceholder}
-                    alt={event.title || "Event Image"}
+                    alt={event.title || t.eventImageAlt}
                     className="block h-[60vh] w-full object-cover"
                     priority
                     width={1920}
@@ -101,83 +138,156 @@ export default async function EventPage(props: EventPageProps) {
                 </div>
             </div>
             <div className="lg:flex lg:flex-row lg:p-4">
-                <div className="p-2">
+                <div className="p-2 w-full">
                     {/* Event description */}
                     <p className="mb-2 line text-base/8 text-white lg:w-[80%] lg:text-[24px] lg:leading-12 lg:mb-8 whitespace-pre-wrap">
                         {event.description}
                     </p>
                     {/* Image block */}
                     {galleryPhotos.length > 0 && (
-                        <div className="flex w-full flex-col gap-1 overflow-hidden lg:p-2 lg:pr-8">
-                            <Image
-                                src={photo1}
-                                alt={event.title}
-                                className="block h-60 lg:h-[450px] w-full object-cover"
-                                width={1200}
-                                height={800}
-                                priority
-                            />
-                            <div className="flex h-40 lg:h-[378px] w-full flex-row gap-1">
+                        <div className="flex w-full flex-col gap-1 overflow-hidden lg:p-2 lg:pr-4">
+                            {galleryPhotos[1] && !galleryPhotos[2] ? (
+                                <div className="flex w-full h-72 lg:h-[520px] flex-row gap-1">
+                                    <Image
+                                        src={galleryPhotos[0]}
+                                        alt={event.title}
+                                        className="block h-full min-w-0 flex-1 object-cover"
+                                        width={1200}
+                                        height={800}
+                                        priority
+                                    />
+                                    <Image
+                                        src={galleryPhotos[1]}
+                                        alt={event.title}
+                                        className="block h-full w-[180px] sm:w-[220px] lg:w-[40%] xl:w-[30%] object-cover"
+                                        width={450}
+                                        height={800}
+                                        priority
+                                    />
+                                </div>
+                            ) : (
                                 <Image
-                                    src={photo2}
+                                    src={galleryPhotos[0]}
                                     alt={event.title}
-                                    className="block h-full min-w-0 flex-1 object-cover"
-                                    width={600}
-                                    height={400}
+                                    className={`block h-60 w-full object-cover ${hasSingleGalleryPhoto ? "lg:h-[650px]" : "lg:h-[450px]"}`}
+                                    width={1200}
+                                    height={800}
                                     priority
                                 />
-                                <Image
-                                    src={photo3}
-                                    alt={event.title}
-                                    className="block h-full w-40 shrink-0 object-cover lg:w-auto lg:min-w-0 lg:flex-1 lg:shrink"
-                                    width={400}
-                                    height={400}
-                                    priority
-                                />
-                            </div>
+                            )}
+
+                            {galleryPhotos[1] && galleryPhotos[2] && (
+                                <div className="flex h-40 lg:h-[378px] w-full flex-row gap-1">
+                                    <Image
+                                        src={galleryPhotos[1]}
+                                        alt={event.title}
+                                        className="block h-full min-w-0 flex-1 object-cover"
+                                        width={600}
+                                        height={400}
+                                        priority
+                                    />
+                                    <Image
+                                        src={galleryPhotos[2]}
+                                        alt={event.title}
+                                        className="block h-full w-40 shrink-0 object-cover lg:w-auto lg:min-w-0 lg:flex-1 lg:shrink"
+                                        width={400}
+                                        height={400}
+                                        priority
+                                    />
+                                </div>
+                            )}
+
                         </div>
                     )}
                 </div>
                 {/* EventInfo section */}
-                <div className="flex flex-col gap-12 p-4 lg:mt-3 lg:min-w-[365px]">
+                <div className="flex flex-col px-4 lg:mt-0 lg:w-[365px]">
                     {event.artist?.name && (
                         <EventInfoBlock
-                            label="Artist"
+                            label={t.artistLabel}
                             title={event.artist.name}
                             description={event.artist.description}
-                            linkText={event.artist.siteHref ? "Visit Artist Site" : undefined}
-                            linkHref={event.artist.siteHref ? event.artist.siteHref : undefined}
+                            linkText={
+                                event.artist.siteHref
+                                    ? t.visitArtistSite
+                                    : undefined
+                            }
+                            linkHref={
+                                event.artist.siteHref
+                                    ? event.artist.siteHref
+                                    : undefined
+                            }
                         />
                     )}
                     {event.typeInfo?.title && (
                         <EventInfoBlock
-                            label="Type"
+                            label={t.typeLabel}
                             title={event.typeInfo.title}
                             description={event.typeInfo.description}
                         />
                     )}
                     {event.space && (
                         <EventInfoBlock
-                            label="Space"
-                            title={event.space}
-                            description={event.space === 'VNT Events_Space' ? '90m²' : '40m²'}
+                            label={t.spaceLabel}
+                            title={getSpaceLabel(event.space)}
+                            description={
+                                event.space === "VNT Events_Space"
+                                    ? "90m²"
+                                    : "40m²"
+                            }
+                        />
+                    )}
+
+                    {event.duration?.title && (
+                        <EventInfoBlock
+                            label={t.durationLabel}
+                            title={event.duration?.title}
+                            description={event.duration?.range}
                         />
                     )}
 
                     <EventInfoBlock
-                        label="Want to show your work?"
-                        title="We work with artists, designers, and brands."
-                        linkText="COLLABORATE WITH US"
+                        label={t.collaborateLabel}
+                        title={t.collaborateTitle}
+                        linkText={t.collaborateCta}
                         linkHref="https://www.instagram.com/vnt_madrid/"
                     />
                 </div>
             </div>
 
+            <Link
+                href={`/${lang}/events/${nextEventSlug}`}
+                className="group hidden lg:flex py-4 px-5 flex-row border-y border-zinc-600 text-zinc-500 transition-colors duration-200 hover:bg-white hover:text-black"
+            >
+                <div className="w-full flex items-center">
+                    <p className="text-xl transition-all duration-200 group-hover:pl-2">
+                        {t.nextEventLabel}
+                    </p>
+                </div>
+                <div className="w-full flex flex-row justify-between items-center">
+                    <div className="flex flex-row">
+                        <div className="border-l border-zinc-600 mr-6 my-[8px] transition-colors duration-200 group-hover:border-black" />
+                        <div>
+                            <p className="text-2xl text-zinc-100 uppercase transition-colors duration-200 group-hover:text-black">
+                                {nextEventTitle}
+                            </p>
+                            <div>
+                                {nextEventType} · {getSpaceLabel(nextEventSpace)}
+                            </div>
+                        </div>
+                    </div>
+                    <ArrowRight className="-rotate-45" />
+                </div>
+            </Link>
+
             {/* Mobile next event button */}
             {nextEventSlug && (
                 <div className="block bg-white p-4 text-black lg:hidden">
-                    <Link href={`/${lang}/events/${nextEventSlug}`} className="">
-                        <p className=" text-[14px] text-gray-500">Next Event</p>
+                    <Link
+                        href={`/${lang}/events/${nextEventSlug}`}
+                        className=""
+                    >
+                        <p className=" text-[14px] text-gray-500">{t.nextEventLabel}</p>
                         <div className="flex flex-row items-center justify-between">
                             <p className="text-[24px] uppercase pr-4 truncate">
                                 {nextEventTitle}

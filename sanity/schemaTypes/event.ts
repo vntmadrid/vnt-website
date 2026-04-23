@@ -61,6 +61,15 @@ export const event = defineType({
       }
     }),
     defineField({
+      name: 'duration',
+      title: 'Duration Information',
+      type: 'object',
+      fields: [
+        defineField({ name: 'title', title: 'Duration Title (e.g. 6 Weeks)', type: 'localeString' }),
+        defineField({ name: 'range', title: 'Duration Range (e.g. Oct 14 - Nov 23, 2026)', type: 'localeString' }),
+      ]
+    }),
+    defineField({
       name: 'gallery',
       title: 'Gallery Images (3 images, Order based on importance)',
       type: 'array',

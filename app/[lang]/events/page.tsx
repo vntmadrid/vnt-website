@@ -2,8 +2,8 @@ import Link from "next/link";
 import Image from "next/image";
 import imagePlaceholder from "@/public/images/BgConcrete.jpg";
 import TalkToUsForm from "./TalkToUsForm";
-import VNTlogo from "@/public/VNT black logo.svg";
 import { client } from "@/sanity/lib/client";
+import EventsHeader from "@/app/components/events/EventsHeader";
 
 export default async function EventsPage(props: { params: Promise<{ lang: 'en' | 'es' }> }) {
     const params = await props.params;
@@ -20,27 +20,18 @@ export default async function EventsPage(props: { params: Promise<{ lang: 'en' |
 
     return (
         <main className="bg-black text-white min-h-screen">
-            <div className="flex flex-row justify-between items-center p-4 mb-24">
-                <Link href={`/${lang}`}>
-                    <Image
-                        src={VNTlogo}
-                        alt={"VntLogo"}
-                        className="brightness-0 invert h-14 w-fit"
-                    />
-                </Link>
-                <p className="text-2xl font-semibold">PAST EVENTS</p>
-            </div>
+            <EventsHeader lang={lang} />
             
             {events.length > 0 ? (
                 <ul className="flex gap-4 overflow-x-auto whitespace-nowrap pb-2 mb-24 px-4">
                     {events.map((event: { slug: string, title: string, coverImageUrl: string }) => (
-                        <li key={event.slug} className="shrink-0 w-[300px]">
+                        <li key={event.slug} className="shrink-0 w-[450px]">
                             <Link href={`/${lang}/events/${event.slug}`}>
-                                <div className="relative h-94 w-full">
+                                <div className="relative h-120 w-full">
                                     <Image fill className="object-cover" src={event.coverImageUrl || imagePlaceholder} alt={event.title} />
                                 </div>
                                 <div className="p-5 bg-white text-black flex items-center justify-center">
-                                    <p className="text-2xl font-semibold uppercase line-clamp-2 text-center text-balance">
+                                    <p className="text-2xl lg:text-4xl font-semibold uppercase line-clamp-2 text-center text-balance">
                                         {event.title}
                                     </p>
                                 </div>

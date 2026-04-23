@@ -12,16 +12,26 @@ export interface SiteFooterData {
     emailText?: string;
 }
 
-export default function SiteFooterSection({ data }: { data?: SiteFooterData }) {
+export default function SiteFooterSection({
+    data,
+    lang,
+}: {
+    data?: SiteFooterData;
+    lang: "en" | "es";
+}) {
     const logoSrc = data?.logoUrl || VntLogo;
-    const locationLabel = data?.locationLabel || "Location";
+    const locationLabel = data?.locationLabel || (lang === "es" ? "Ubicacion" : "Location");
     const locationText = data?.locationText || "C. Noviciado 4, 28015 Madrid";
     const locationLink = data?.locationLink || "https://maps.app.goo.gl/k5omgd39GdyZoNmy8?g_st=ic";
 
-    const hoursLabel = data?.hoursLabel || "Hours";
-    const hoursText = data?.hoursText || "Tuesday – Sunday: 10:00 – 19:00";
+    const hoursLabel = data?.hoursLabel || (lang === "es" ? "Horario" : "Hours");
+    const hoursText =
+        data?.hoursText ||
+        (lang === "es"
+            ? "Martes – Domingo: 10:00 – 19:00"
+            : "Tuesday – Sunday: 10:00 – 19:00");
 
-    const emailLabel = data?.emailLabel || "Email";
+    const emailLabel = data?.emailLabel || (lang === "es" ? "Correo" : "Email");
     const emailText = data?.emailText || "vnt.madrid@gmail.com";
 
     const isRemoteLogo = typeof logoSrc === 'string';
