@@ -2,7 +2,20 @@ import Link from "next/link";
 import { Fragment } from "react";
 import CollaborateOfferItem from "./CollaborateOfferItem";
 
-const collaborateOffers = [
+export interface CollaborateOffer {
+    title?: string;
+    description?: string;
+}
+
+export interface CollaborateSectionData {
+    sectionTitle?: string;
+    offers?: CollaborateOffer[];
+    ctaTitle?: string;
+    ctaDescription?: string;
+    ctaButtonText?: string;
+}
+
+const collaborateOffersFallbacks = [
     {
         title: "Pop-up Experiences",
         description:
@@ -20,22 +33,40 @@ const collaborateOffers = [
     },
 ];
 
-export default function CollaborateSection() {
+export default function CollaborateSection({ data }: { data?: CollaborateSectionData }) {
+    const displayTitle = data?.sectionTitle || "COLLABORATE_";
+    const displayOffers = data?.offers && data.offers.length > 0 ? data.offers : collaborateOffersFallbacks;
+    const originalCtaTitle = (
+        <>
+            Got Something
+            <br className="hidden lg:block" />
+            {" "} in Mind?
+        </>
+    );
+    const originalCtaDesc = (
+        <>
+            Drop us a message and let's see
+            <br className="hidden lg:block" />
+            what we can build together.
+        </>
+    );
+    const ctaButtonText = data?.ctaButtonText || "Let's Talk";
+
     return (
         <div id="collaborate" className="flex w-full bg-cover bg-center bg-no-repeat font-sans">
             <div className="w-full bg-white text-black">
                 <div className="p-6 lg:p-12">
                     <p className="mb-4 lg:mb-10 text-4xl font-semibold lg:text-[58px]">
-                        COLLABORATE_
+                        {displayTitle}
                     </p>
                     <div className="flex flex-col gap-4 lg:flex-row lg:justify-between">
-                        {collaborateOffers.map((offer, index) => (
-                            <Fragment key={offer.title}>
+                        {displayOffers.map((offer, index) => (
+                            <Fragment key={offer.title || index}>
                                 <CollaborateOfferItem
-                                    title={offer.title}
-                                    description={offer.description}
+                                    title={offer.title || ""}
+                                    description={offer.description || ""}
                                 />
-                                {index < collaborateOffers.length - 1 && (
+                                {index < displayOffers.length - 1 && (
                                     <div className="h-px border border-gray-200 lg:h-auto lg:w-px" />
                                 )}
                             </Fragment>
@@ -44,22 +75,18 @@ export default function CollaborateSection() {
                 </div>
                 <div className="bg-black px-4 py-6 lg:p-8 pb-7  text-white lg:flex lg:flex-row lg:justify-between lg:items-center">
                     <p className="mb-2 lg:mb-0 text-4xl lg:text-[48px] font-semibold">
-                        Got Something
-                        <br className="hidden lg:block" />
-                        {" "} in Mind?
+                        {data?.ctaTitle ? <span className="whitespace-pre-line">{data.ctaTitle}</span> : originalCtaTitle}
                     </p>
                     <div className="">
                         <p className="mb-6 lg:mb-4 text-xl lg:text-right">
-                            Drop us a message and let's see
-                            <br className="hidden lg:block" />
-                            what we can build together.
+                        {data?.ctaDescription ? <span className="whitespace-pre-line">{data.ctaDescription}</span> : originalCtaDesc}
                         </p>
 
                         <Link
                             href={"events"}
                             className="group flex flex-row justify-between border-4 border-white p-2 text-2xl font-semibold lg:w-fit lg:ml-auto transition-all duration-300 hover:bg-white hover:text-black active:scale-95"
                         >
-                            <p>Let's Talk </p>
+                            <p>{ctaButtonText}{" "}</p>
                             <p className="transition-transform duration-300 group-hover:translate-x-1">→</p>
                         </Link>
                     </div>

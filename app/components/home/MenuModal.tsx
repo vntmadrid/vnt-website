@@ -173,7 +173,7 @@ export default function MenuModal({ isOpen, onClose }: MenuModalProps) {
                                                 <div key={itemIdx} className="flex justify-between items-start gap-4">
                                                     <div className="flex-1">
                                                         <p className="text-lg font-medium">{item.name}</p>
-                                                        {item.description && (
+                                                        {('description' in item) && item.description && (
                                                             <p className="text-sm text-gray-600 mt-1 max-w-[90%] leading-relaxed">
                                                                 {item.description}
                                                             </p>

@@ -4,7 +4,6 @@ import ConceptStoreSection from "../components/home/ConceptStoreSection";
 import EventsSection from "../components/home/EventsSection";
 import FoundersSection from "../components/home/FoundersSection";
 import IntroSection from "../components/home/IntroSection";
-import SiteFooterSection from "../components/home/SiteFooterSection";
 import EventSpaces from "../components/home/EventSpaces";
 import HomeStickyHeader from "../components/home/HomeStickyHeader";
 import ComingSoonPage from "../components/ComingSoonPage";
@@ -14,18 +13,65 @@ export default async function Home(props: { params: Promise<{ lang: 'en' | 'es' 
     const params = await props.params;
     const lang = params.lang;
 
-    const query = `*[_type == "introSection"][0]{
-        "leftTitle": leftTitle[$lang],
-        "leftBody": leftBody[$lang],
-        "rightTitle": rightTitle[$lang],
-        "rightBody": rightBody[$lang],
-        "featuredImageUrl": featuredImage.asset->url,
-        "backgroundImageUrl": backgroundImage.asset->url
+    const query = `{
+      "intro": *[_type == "introSection"][0]{
+          "leftTitle": leftTitle[$lang],
+          "leftBody": leftBody[$lang],
+          "rightTitle": rightTitle[$lang],
+          "rightBody": rightBody[$lang],
+          "featuredImageUrl": featuredImage.asset->url,
+          "backgroundImageUrl": backgroundImage.asset->url
+      },
+      "eventSpaces": *[_type == "eventSpaces"][0]{
+          "coffeeBgUrl": coffeeBg.asset->url,
+          "conceptBgUrl": conceptBg.asset->url,
+          "coffeeLabel": coffeeLabel[$lang],
+          "coffeeTitle": coffeeTitle[$lang],
+          "coffeeDesc": coffeeDesc[$lang],
+          "menuButtonText": menuButtonText[$lang],
+          "conceptLabel": conceptLabel[$lang],
+          "conceptTitle": conceptTitle[$lang],
+          "conceptDesc": conceptDesc[$lang],
+          "menuTitle": menuTitle[$lang],
+          "menuFooter": menuFooter[$lang],
+          "menuSections": menuSections[]{
+            "sectionName": sectionName[$lang],
+            "items": items[]{
+               "name": name[$lang],
+               "description": description[$lang],
+               price
+            }
+          }
+      },
+      "events": *[_type == "event"]{
+          "slug": slug.current,
+          "title": title[$lang],
+          "coverImageUrl": coverPhoto.asset->url
+      },
+      "collaborate": *[_type == "collaborateSection"][0]{
+          "sectionTitle": sectionTitle[$lang],
+          "offers": offers[]{
+              "title": title[$lang],
+              "description": description[$lang]
+          },
+          "ctaTitle": ctaTitle[$lang],
+          "ctaDescription": ctaDescription[$lang],
+          "ctaButtonText": ctaButtonText[$lang]
+      },
+      "founders": *[_type == "foundersSection"][0]{
+          "sectionTitle": sectionTitle[$lang],
+          "backgroundImageUrl": backgroundImage.asset->url,
+          "foundersImageUrl": foundersImage.asset->url,
+          "founders": founders[]{
+              name,
+              "description": description[$lang]
+          }
+      }
     }`;
 
     // You can also add more items to the query for other sections
 
-    const homeData = await client.fetch(query, { lang });
+    const data = await client.fetch(query, { lang });
 
     return (
         <>
@@ -34,20 +80,20 @@ export default async function Home(props: { params: Promise<{ lang: 'en' | 'es' 
             
             {/* Example: Passing sanity data down */}
             <IntroSection 
-                leftTitle={homeData?.leftTitle} 
-                leftBody={homeData?.leftBody} 
-                rightTitle={homeData?.rightTitle} 
-                rightBody={homeData?.rightBody} 
-                featuredImage={homeData?.featuredImageUrl}
-                backgroundImage={homeData?.backgroundImageUrl}
+                leftTitle={data.intro?.leftTitle} 
+                leftBody={data.intro?.leftBody} 
+                rightTitle={data.intro?.rightTitle} 
+                rightBody={data.intro?.rightBody} 
+                featuredImage={data.intro?.featuredImageUrl}
+                backgroundImage={data.intro?.backgroundImageUrl}
             />
             {/* <IntroSection /> */}
 
-            <EventSpaces />
-            <EventsSection />
+            <EventSpaces data={data.eventSpaces} />
+            <EventsSection eventsData={data.events} />
 
-            <CollaborateSection />
-            <FoundersSection />
+            <CollaborateSection data={data.collaborate} />
+            <FoundersSection data={data.founders} />
         </>
     );
 }

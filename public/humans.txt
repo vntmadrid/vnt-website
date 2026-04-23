@@ -1,0 +1,10 @@
+/* DEVELOPER */
+Name: Nichita Condrea
+Contact: Nichitadev@gmail.com
+Location: Ireland / Madrid
+Portfolio: nichita.dev
+Story: Built my own path to Spain through a self secured internship after my university didn’t have the services offer one.
+
+/* SITE */
+Languages: English, Spanish
+Components: Next.js, React, Tailwind CSS, Sanity CMS, Framer motion, React Bits

@@ -15,6 +15,11 @@ export default function EventInfoBlock({
   linkText,
   linkHref,
 }: EventInfoBlockProps) {
+  const resolvedHref =
+    linkHref && !/^([a-z][a-z0-9+.-]*:)?\/\//i.test(linkHref)
+      ? `https://${linkHref}`
+      : linkHref;
+
   return (
     <div className="border-b border-mist-800 pb-12">
       <p className="text-[14px] text-mist-500 leading-4">{label}</p>
@@ -22,8 +27,13 @@ export default function EventInfoBlock({
       {description ? (
         <p className="text-[16px] text-mist-300">{description}</p>
       ) : null}
-      {linkText && linkHref ? (
-        <Link href={linkHref} className="text-[16px] underline text-mist-400">
+      {linkText && resolvedHref ? (
+        <Link
+          href={resolvedHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[16px] underline text-mist-400"
+        >
           {linkText} {"→"}
         </Link>
       ) : null}

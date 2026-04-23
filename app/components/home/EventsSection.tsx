@@ -6,13 +6,6 @@ import ConceptStoreBg from "@/public/images/ConceptStoreBG.png";
 import { useRef, useState } from "react";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 
-const events = [
-    { slug: "beton-brut", title: "BÉTON BRUT" },
-    { slug: "summer-opening", title: "Summer Opening" },
-    { slug: "design-talk", title: "Design Talk" },
-    { slug: "fashion-night", title: "Fashion Night" },
-];
-
 // Variants for the parent container to handle the stagger effect
 const containerVariants = {
     initial: {},
@@ -45,9 +38,16 @@ const cardVariants = {
     },
 };
 
-export default function EventsSection() {
+export default function EventsSection({ eventsData }: { eventsData?: { slug: string, title: string, coverImageUrl: string }[] }) {
+    if (!eventsData || eventsData.length === 0) return null;
+    return <EventsSectionInner eventsData={eventsData} />;
+}
+
+function EventsSectionInner({ eventsData }: { eventsData: { slug: string, title: string, coverImageUrl: string }[] }) {
     const sectionRef = useRef(null);
     const [isTriggered, setIsTriggered] = useState(false);
+    
+    const currentEvents = eventsData;
 
     const { scrollYProgress } = useScroll({
         target: sectionRef,
@@ -102,7 +102,7 @@ export default function EventsSection() {
                     initial="initial"
                     animate={isTriggered ? "animate" : "initial"}
                 >
-                    {events.map((event) => (
+                    {currentEvents.map((event) => (
                         <motion.div
                             key={event.slug}
                             variants={cardVariants}
@@ -119,14 +119,15 @@ export default function EventsSection() {
                             >
                                 <div className="flex h-full flex-col items-center">
                                     <div className="w-full min-w-0 p-3 lg:p-5">
-                                        <p className="w-full min-w-0 truncate text-center font-semibold text-2xl lg:text-5xl uppercase">
+                                        <p className="w-full min-w-0 text-center font-semibold text-2xl lg:text-3xl uppercase line-clamp-2">
                                             {event.title}
                                         </p>
                                     </div>
-                                    <div className="relative h-full w-full overflow-hidden">
+                                    <div className="relative h-full w-full overflow-hidden flex items-center justify-center bg-gray-200">
                                         <Image
-                                            className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
-                                            src={ConceptStoreBg}
+                                            fill
+                                            className="object-cover transition-transform duration-500 hover:scale-105"
+                                            src={('coverImageUrl' in event && event.coverImageUrl) ? event.coverImageUrl : ConceptStoreBg}
                                             alt={event.title}
                                         />
                                     </div>
