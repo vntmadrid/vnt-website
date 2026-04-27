@@ -1,13 +1,25 @@
-import Link from "next/link";
-import Image from "next/image";
-import imagePlaceholder from "@/public/images/BgConcrete.jpg";
 import TalkToUsForm from "./TalkToUsForm";
 import { client } from "@/sanity/lib/client";
 import EventsHeader from "@/app/components/events/EventsHeader";
+import EventsCarousel from "./EventsCarousel";
 
-export default async function EventsPage(props: { params: Promise<{ lang: 'en' | 'es' }> }) {
+export default async function EventsPage(props: {
+    params: Promise<{ lang: "en" | "es" }>;
+}) {
     const params = await props.params;
     const lang = params.lang;
+    const t =
+        lang === "es"
+            ? {
+                  noEventsTitle: "No hay eventos pasados",
+                  noEventsBody: "Vuelve pronto para futuras actualizaciones.",
+                  formLead: "Quieres colaborar con VNT?",
+              }
+            : {
+                  noEventsTitle: "No Past Events",
+                  noEventsBody: "Stay tuned for future updates.",
+                  formLead: "Want to collaborate with VNT?",
+              };
 
     const query = `*[_type == "event"] | order(_createdAt desc){
         "slug": slug.current,
@@ -21,35 +33,28 @@ export default async function EventsPage(props: { params: Promise<{ lang: 'en' |
     return (
         <main className="bg-black text-white min-h-screen">
             <EventsHeader lang={lang} />
-            
-            {events.length > 0 ? (
-                <ul className="flex gap-4 overflow-x-auto whitespace-nowrap pb-2 mb-24 px-4">
-                    {events.map((event: { slug: string, title: string, coverImageUrl: string }) => (
-                        <li key={event.slug} className="shrink-0 w-[450px]">
-                            <Link href={`/${lang}/events/${event.slug}`}>
-                                <div className="relative h-120 w-full">
-                                    <Image fill className="object-cover" src={event.coverImageUrl || imagePlaceholder} alt={event.title} />
-                                </div>
-                                <div className="p-5 bg-white text-black flex items-center justify-center">
-                                    <p className="text-2xl lg:text-4xl font-semibold uppercase line-clamp-2 text-center text-balance">
-                                        {event.title}
-                                    </p>
-                                </div>
-                            </Link>
-                        </li>
-                    ))}
-                </ul>
-            ) : (
-                <div className="flex flex-col items-center justify-center py-20 mx-4 mb-24 min-h-[300px] border-dashed rounded-sm">
-                    <p className="text-gray-400 uppercase tracking-wider text-2xl font-medium mb-2">No Past Events</p>
-                    <p className="text-gray-600 text-lg">Stay tuned for future updates.</p>
-                </div>
-            )}
 
-            <div className="flex justify-center px-4">
-                <div className="w-full lg:w-1/3">
-                    <TalkToUsForm />
-                </div>
+            <div className="h-[90vh] mb-4 flex items-center">
+                {events.length > 0 ? (
+                    <EventsCarousel lang={lang} events={events} />
+                ) : (
+                    <div className="flex flex-col items-center justify-center py-20 mx-4 mb-24 min-h-[300px] border-dashed rounded-sm">
+                        <p className="text-gray-400 uppercase tracking-wider text-2xl font-medium mb-2">
+                            {t.noEventsTitle}
+                        </p>
+                        <p className="text-gray-600 text-lg">
+                            {t.noEventsBody}
+                        </p>
+                    </div>
+                )}
+            </div>
+
+            <div className="mx-4 lg:mx-100 border-b border-zinc-800">
+                {/* <p className="text-zinc-300 uppercase tracking-wide text-sm">{t.formLead}</p> */}
+            </div>
+
+            <div className="flex flex-row items-center justify-center px-4 lg:px-6 pt-16 pb-10">
+                <TalkToUsForm lang={lang} />
             </div>
         </main>
     );

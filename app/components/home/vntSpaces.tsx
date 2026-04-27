@@ -13,7 +13,7 @@ import MenuContent from "./MenuContent";
 import ConceptStoreBg from "@/public/images/ConceptStoreBG.png";
 import CoffeeGalleryBg from "@/public/images/CoffeeGalleryBg.png";
 
-export default function CafeStoryScroll({ data }: any) {
+export default function vntSpaces({ data }: any) {
     const containerRef = useRef<HTMLDivElement>(null);
     const [showCoffeeContent, setShowCoffeeContent] = useState(true);
     const [isMenuOpen, setIsMenuOpen] = useState(false);

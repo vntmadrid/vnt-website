@@ -44,15 +44,16 @@ export default async function EventPage(props: EventPageProps) {
                   nextEventLabel: "Next event",
               };
 
-    const getSpaceLabel = (space: string | null) => {
-        if (space === "VNT Events_Space") {
-            return lang === "es" ? "Espacio de Eventos VNT" : "VNT Events Space";
-        }
-        if (space === "VNT Coffee_Gallery") {
-            return lang === "es" ? "Galeria Cafe VNT" : "VNT Coffee Gallery";
-        }
-        return space;
-    };
+    //   UNCOMMENT if they want vnt coffee gallery to be translated (i dont think they do but just in case :P )
+    // const getSpaceLabel = (space: string | null) => {
+    //     if (space === "VNT Events_Space") {
+    //         return lang === "es" ? "Espacio de Eventos VNT" : "VNT Events Space";
+    //     }
+    //     if (space === "VNT Coffee_Gallery") {
+    //         return lang === "es" ? "Galeria Cafe VNT" : "VNT Coffee Gallery";
+    //     }
+    //     return space;
+    // };
 
     // Fetch the current event and also fetch adjacent events to calculate next event
     const query = `{
@@ -196,7 +197,6 @@ export default async function EventPage(props: EventPageProps) {
                                     />
                                 </div>
                             )}
-
                         </div>
                     )}
                 </div>
@@ -229,7 +229,7 @@ export default async function EventPage(props: EventPageProps) {
                     {event.space && (
                         <EventInfoBlock
                             label={t.spaceLabel}
-                            title={getSpaceLabel(event.space)}
+                            title={event.space}
                             description={
                                 event.space === "VNT Events_Space"
                                     ? "90m²"
@@ -272,7 +272,7 @@ export default async function EventPage(props: EventPageProps) {
                                 {nextEventTitle}
                             </p>
                             <div>
-                                {nextEventType} · {getSpaceLabel(nextEventSpace)}
+                                {nextEventType} · {nextEventSpace}
                             </div>
                         </div>
                     </div>
@@ -287,7 +287,9 @@ export default async function EventPage(props: EventPageProps) {
                         href={`/${lang}/events/${nextEventSlug}`}
                         className=""
                     >
-                        <p className=" text-[14px] text-gray-500">{t.nextEventLabel}</p>
+                        <p className=" text-[14px] text-gray-500">
+                            {t.nextEventLabel}
+                        </p>
                         <div className="flex flex-row items-center justify-between">
                             <p className="text-[24px] uppercase pr-4 truncate">
                                 {nextEventTitle}

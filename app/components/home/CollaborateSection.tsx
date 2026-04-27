@@ -74,12 +74,12 @@ export default function CollaborateSection({ data }: { data?: CollaborateSection
                     </div>
                 </div>
                 <div className="bg-black px-4 py-6 lg:p-8 pb-7  text-white lg:flex lg:flex-row lg:justify-between lg:items-center">
-                    <p className="mb-2 lg:mb-0 text-4xl lg:text-[48px] font-semibold">
-                        {data?.ctaTitle ? <span className="whitespace-pre-line">{data.ctaTitle}</span> : originalCtaTitle}
+                    <p className="mb-2 lg:mb-0 text-4xl lg:max-w-[30%] lg:text-[48px] font-semibold">
+                        {data?.ctaTitle ? data.ctaTitle : originalCtaTitle}
                     </p>
-                    <div className="">
-                        <p className="mb-6 lg:mb-4 text-xl lg:text-right">
-                        {data?.ctaDescription ? <span className="whitespace-pre-line">{data.ctaDescription}</span> : originalCtaDesc}
+                    <div className="flex flex-col items-end">
+                        <p className="mb-6 lg:mb-4 text-xl lg:max-w-[60%] lg:text-right">
+                        {data?.ctaDescription ? data.ctaDescription : originalCtaDesc}
                         </p>
 
                         <Link

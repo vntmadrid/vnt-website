@@ -4,12 +4,14 @@ import ConceptStoreSection from "../components/home/ConceptStoreSection";
 import EventsSection from "../components/home/EventsSection";
 import FoundersSection from "../components/home/FoundersSection";
 import IntroSection from "../components/home/IntroSection";
-import EventSpaces from "../components/home/EventSpaces";
+import VntSpaces from "../components/home/vntSpaces";
 import HomeStickyHeader from "../components/home/HomeStickyHeader";
 import ComingSoonPage from "../components/ComingSoonPage";
 import { client } from "@/sanity/lib/client";
 
-export default async function Home(props: { params: Promise<{ lang: 'en' | 'es' }> }) {
+export default async function Home(props: {
+    params: Promise<{ lang: "en" | "es" }>;
+}) {
     const params = await props.params;
     const lang = params.lang;
 
@@ -22,7 +24,7 @@ export default async function Home(props: { params: Promise<{ lang: 'en' | 'es' 
           "featuredImageUrl": featuredImage.asset->url,
           "backgroundImageUrl": backgroundImage.asset->url
       },
-      "eventSpaces": *[_type == "eventSpaces"][0]{
+      "vntSpaces": *[_type == "vntSpaces"][0]{
           "coffeeBgUrl": coffeeBg.asset->url,
           "conceptBgUrl": conceptBg.asset->url,
           "coffeeLabel": coffeeLabel[$lang],
@@ -43,11 +45,11 @@ export default async function Home(props: { params: Promise<{ lang: 'en' | 'es' 
             }
           }
       },
-      "events": *[_type == "event"]{
-          "slug": slug.current,
-          "title": title[$lang],
-          "coverImageUrl": coverPhoto.asset->url
-      },
+    "events": *[_type == "event"] | order(_createdAt desc) {
+        "slug": slug.current,
+        "title": title[$lang],
+        "coverImageUrl": coverPhoto.asset->url
+    },
       "collaborate": *[_type == "collaborateSection"][0]{
           "sectionTitle": sectionTitle[$lang],
           "offers": offers[]{
@@ -77,19 +79,19 @@ export default async function Home(props: { params: Promise<{ lang: 'en' | 'es' 
         <>
             {/* <ComingSoonPage /> */}
             <HomeStickyHeader />
-            
+
             {/* Example: Passing sanity data down */}
-            <IntroSection 
-                leftTitle={data.intro?.leftTitle} 
-                leftBody={data.intro?.leftBody} 
-                rightTitle={data.intro?.rightTitle} 
-                rightBody={data.intro?.rightBody} 
+            <IntroSection
+                leftTitle={data.intro?.leftTitle}
+                leftBody={data.intro?.leftBody}
+                rightTitle={data.intro?.rightTitle}
+                rightBody={data.intro?.rightBody}
                 featuredImage={data.intro?.featuredImageUrl}
                 backgroundImage={data.intro?.backgroundImageUrl}
             />
             {/* <IntroSection /> */}
 
-            <EventSpaces data={data.eventSpaces} />
+            <VntSpaces data={data.vntSpaces} />
             <EventsSection eventsData={data.events} />
 
             <CollaborateSection data={data.collaborate} />

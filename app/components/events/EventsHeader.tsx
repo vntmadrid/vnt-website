@@ -25,7 +25,7 @@ export default function EventsHeader({
 
     return (
         <div
-            className={`flex flex-row justify-between items-center p-6 ${!isDetailPage ? "mb-24" : ""}`}
+            className={`flex flex-row justify-between items-center p-6 ${!isDetailPage ? "mb-" : ""}`}
         >
             <Link href={`/${lang}`}>
                 <Image
