@@ -75,6 +75,13 @@ export const event = defineType({
       type: 'array',
       of: [{ type: 'image', options: { hotspot: true } }]
     }),
+    defineField({
+      name: 'eventProducts',
+      title: 'Event Merchandise / Shop Items',
+      type: 'array',
+      description: 'Select the products available to buy for this specific event.',
+      of: [{ type: 'reference', to: [{ type: 'product' }] }]
+    }),
   ],
   preview: {
     select: {

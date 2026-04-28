@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import imagePlaceholder from "@/public/images/BgConcrete.jpg";
@@ -125,7 +125,7 @@ export default function EventsCarousel({ lang, events }: EventsCarouselProps) {
                         /* 1. Added 'transition-transform' here 
                2. Ensure 'hover:-translate-y-2' is here
             */
-                        className="shrink-0 snap-start w-[82vw] max-w-[450px] sm:w-[390px] lg:w-[340px] xl:w-[400px] transition-transform duration-300 ease-out hover:-translate-y-2"
+                        className="shrink-0 snap-center w-[82vw] max-w-[450px] sm:w-[390px] lg:w-[340px] xl:w-[400px] transition-transform duration-300 ease-out hover:-translate-y-2"
                     >
                         <Link
                             href={`/${lang}/events/${event.slug}`}
@@ -133,7 +133,12 @@ export default function EventsCarousel({ lang, events }: EventsCarouselProps) {
                             onClick={handleLinkClick}
                             draggable={false}
                         >
-                            <div className="relative aspect-[4/5] w-full overflow-hidden pointer-events-none">
+                            <div 
+                                className="relative aspect-[4/5] w-full overflow-hidden pointer-events-none"
+                                style={{
+                                    viewTransitionName: `event-image-${event.slug.replace(/[^a-zA-Z0-9]/g, "-")}`,
+                                }}
+                            >
                                 <Image
                                     fill
                                     className="object-cover transition-transform duration-300 ease-out lg:group-hover:scale-[1.015]"
@@ -144,7 +149,12 @@ export default function EventsCarousel({ lang, events }: EventsCarouselProps) {
                                     draggable={false}
                                 />
                             </div>
-                            <div className="bg-white p-5 text-black flex items-center justify-center transition-colors duration-200 lg:group-hover:bg-zinc-100">
+                            <div
+                                className="bg-white p-5 text-black flex items-center justify-center transition-colors duration-200 lg:group-hover:bg-zinc-100"
+                                style={{
+                                    viewTransitionName: `event-label-${event.slug.replace(/[^a-zA-Z0-9]/g, "-")}`,
+                                }}
+                            >
                                 <p className="text-2xl lg:text-3xl font-semibold uppercase truncate text-center">
                                     {event.title}
                                 </p>

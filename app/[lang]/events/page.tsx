@@ -54,7 +54,7 @@ export default async function EventsPage(props: {
                 {/* <p className="text-zinc-300 uppercase tracking-wide text-sm">{t.formLead}</p> */}
             </div>
 
-            <div id="contact-form-section" className="flex flex-row items-center justify-center px-4 lg:px-6 pt-16 pb-10">
+            <div id="contact-form-section" className="flex flex-row items-center justify-center px-4 lg:px-6 pt-16 lg:pt-30 pb-10 lg:pb-30">
                 <TalkToUsForm lang={lang} />
             </div>
 

@@ -1,6 +1,8 @@
+"use client";
 import Link from "next/link";
 import { Fragment } from "react";
 import CollaborateOfferItem from "./CollaborateOfferItem";
+import { useRouter } from "next/navigation";
 
 export interface CollaborateOffer {
     title?: string;
@@ -51,6 +53,13 @@ export default function CollaborateSection({ data }: { data?: CollaborateSection
         </>
     );
     const ctaButtonText = data?.ctaButtonText || "Let's Talk";
+    const router = useRouter();
+
+    const handleCtaClick = (e: React.MouseEvent) => {
+        e.preventDefault();
+        // Go to /events, then scroll to the form anchor
+        router.push("/events#contact-form-section");
+    };
 
     return (
         <div id="collaborate" className="flex w-full bg-cover bg-center bg-no-repeat font-sans">
@@ -83,7 +92,8 @@ export default function CollaborateSection({ data }: { data?: CollaborateSection
                         </p>
 
                         <Link
-                            href={"events"}
+                            href={"/events#contact-form-section"}
+                            onClick={handleCtaClick}
                             className="group flex flex-row justify-between border-4 border-white p-2 text-2xl font-semibold lg:w-fit lg:ml-auto transition-all duration-300 hover:bg-white hover:text-black active:scale-95"
                         >
                             <p>{ctaButtonText}{" "}</p>

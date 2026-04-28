@@ -7,7 +7,8 @@ import { event } from './event'
 import { collaborateSection } from './collaborateSection'
 import { foundersSection } from './foundersSection'
 import { siteFooter } from './siteFooter'
+import { product } from './product'
 
 export const schema: { types: SchemaTypeDefinition[] } = {
-  types: [localeString, localeText, introSection, vntSpaces, event, collaborateSection, foundersSection, siteFooter],
+  types: [localeString, localeText, introSection, vntSpaces, event, collaborateSection, foundersSection, siteFooter, product],
 }

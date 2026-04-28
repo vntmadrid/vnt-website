@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import Image from "next/image";
 import ImagePlaceholder from "@/public/images/BgConcrete.jpg";
 import EventInfoBlock from "@/app/components/events/EventInfoBlock";
@@ -75,7 +75,14 @@ export default async function EventPage(props: EventPageProps) {
                 "description": typeInfo.description[$lang]
             },
             "space": space,
-            "gallery": gallery[0...3].asset->url
+            "gallery": gallery[0...3].asset->url,
+            "products": eventProducts[]-> {
+                _id,
+                "title": title[$lang],
+                price,
+                stock,
+                "imageUrl": image.asset->url
+            }
         },
         "allEvents": *[_type == "event"] | order(_createdAt asc) {
             "slug": slug.current,
@@ -121,18 +128,32 @@ export default async function EventPage(props: EventPageProps) {
 
             {/* Bg image */}
             <div className="relative w-full overflow-hidden leading-none">
-                <Image
-                    src={event.coverImageUrl || ImagePlaceholder}
-                    alt={event.title || t.eventImageAlt}
-                    className="block h-[60vh] w-full object-cover"
-                    priority
-                    width={1920}
-                    height={1080}
-                />
+                <div
+                    className="relative block h-[60vh] w-full"
+                    style={{
+                        viewTransitionName: `event-image-${slug.replace(/[^a-zA-Z0-9]/g, "-")}`,
+                    }}
+                >
+                    <Image
+                        src={event.coverImageUrl || ImagePlaceholder}
+                        alt={event.title || t.eventImageAlt}
+                        className="absolute inset-0 h-full w-full object-cover"
+                        priority
+                        width={1920}
+                        height={1080}
+                    />
 
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-black/90 to-transparent" />
+                    <div 
+                        className="pointer-events-none absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-black/90 to-transparent z-0"
+                    />
+                </div>
 
-                <div className="absolute bottom-4 left-4 bg-white p-4 lg:p-5 px-6 lg:min-w-[454px] text-black">
+                <div
+                    className="absolute bottom-4 left-4 bg-white p-4 lg:p-5 px-6 lg:min-w-[454px] text-black z-10"
+                    style={{
+                        viewTransitionName: `event-label-${slug.replace(/[^a-zA-Z0-9]/g, "-")}`,
+                    }}
+                >
                     <h1 className="text-3xl lg:text-[44px] font-semibold uppercase text-center">
                         {event.title}
                     </h1>
@@ -254,6 +275,88 @@ export default async function EventPage(props: EventPageProps) {
                     />
                 </div>
             </div>
+
+            {/* --- EXCLUSIVE EVENT SHOP SECTION --- */}
+            {event.products && event.products.length > 0 && (
+                <div className="w-full border-y border-zinc-600 bg-black pt-12 pb-16">
+                    <div className="px-4 lg:px-6 mb-8 flex justify-between items-end">
+                        <h2 className="text-3xl font-semibold uppercase text-white">
+                            {lang === 'es' ? 'La Tienda del Evento' : 'Event Shop'}
+                        </h2>
+                    </div>
+                    
+                    {/* Horizontal Scroll Container */}
+                    <div className="flex w-full overflow-x-auto snap-x snap-mandatory hide-scrollbar gap-4 px-4 lg:px-6">
+                        {event.products.map((product: any) => {
+                            const isSoldOut = product.stock === 0;
+                            const isLowStock = product.stock > 0 && product.stock <= 5;
+
+                            return (
+                                <div 
+                                    key={product._id} 
+                                    className="flex-none w-[280px] lg:w-[320px] snap-start group"
+                                >
+                                    {/* Product Image */}
+                                    <div className="relative w-full aspect-[3/4] bg-zinc-900 mb-4 overflow-hidden">
+                                        {product.imageUrl && (
+                                            <Image 
+                                                src={product.imageUrl} 
+                                                alt={product.title}
+                                                fill
+                                                className={`object-cover transition-transform duration-500 ${isSoldOut ? 'opacity-50 grayscale' : 'group-hover:scale-105'}`}
+                                            />
+                                        )}
+                                        {/* Optional Overlays for Sold Out */}
+                                        {isSoldOut && (
+                                            <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-10 pointer-events-none">
+                                                <span className="text-white uppercase font-semibold tracking-widest border border-white px-4 py-2">
+                                                    {lang === 'es' ? 'Agotado' : 'Sold Out'}
+                                                </span>
+                                            </div>
+                                        )}
+                                    </div>
+                                    
+                                    {/* Product Info */}
+                                    <div className="flex justify-between items-start text-white">
+                                        <div>
+                                            <h3 className="text-lg uppercase line-clamp-2 pr-2 leading-tight">
+                                                {product.title}
+                                            </h3>
+                                            {/* Stock Status text */}
+                                            {isSoldOut ? (
+                                                <p className="text-sm text-zinc-500 uppercase mt-1">
+                                                    {lang === 'es' ? 'Sin stock' : 'Out of stock'}
+                                                </p>
+                                            ) : (
+                                                <p className={`text-sm uppercase mt-1 ${isLowStock ? 'text-orange-400' : 'text-zinc-400'}`}>
+                                                    {lang === 'es' ? `${product.stock} disponibles` : `${product.stock} available`}
+                                                    {isLowStock && (lang === 'es' ? ' - ¡Casi agotado!' : ' - Low stock!')}
+                                                </p>
+                                            )}
+                                        </div>
+                                        <p className="text-lg whitespace-nowrap">€{product.price}</p>
+                                    </div>
+                                    
+                                    {/* Buy Button */}
+                                    <button 
+                                        disabled={isSoldOut}
+                                        className={`w-full mt-4 border py-3 uppercase text-sm tracking-wider transition-colors 
+                                            ${isSoldOut 
+                                                ? 'border-zinc-800 text-zinc-600 cursor-not-allowed' 
+                                                : 'border-white text-white hover:bg-white hover:text-black'
+                                            }`}
+                                    >
+                                        {isSoldOut 
+                                            ? (lang === 'es' ? 'Agotado' : 'Sold Out') 
+                                            : (lang === 'es' ? 'Añadir al carrito' : 'Add to Cart')
+                                        }
+                                    </button>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
 
             <Link
                 href={`/${lang}/events/${nextEventSlug}`}

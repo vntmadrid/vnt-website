@@ -141,3 +141,32 @@ body {
     @apply font-sans;
   }
 }
+/* Hide scrollbar for horizontal scroll sections */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@keyframes fadeInGradient {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fade-in-gradient {
+  /* Speeds up to match typical View Transition times smoothly */
+  animation: fadeInGradient 0.3s ease-out 0.05s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

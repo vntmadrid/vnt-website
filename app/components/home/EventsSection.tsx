@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 import ConceptStoreBg from "@/public/images/ConceptStoreBG.png";
 import { useRef, useState } from "react";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
@@ -184,7 +184,7 @@ function EventsSectionInner({
                                 className="block h-115 w-75 bg-white text-black lg:h-155 lg:w-117.5 overflow-hidden pointer-events-auto"
                             >
                                 <div className="flex h-full flex-col items-center pointer-events-none">
-                                    <div className="w-full min-w-0 p-3 lg:p-5">
+                                    <div className="w-full min-w-0 p-3 lg:p-5 bg-white">
                                         <p className="w-full min-w-0 text-center font-semibold text-2xl lg:text-3xl uppercase truncate">
                                             {event.title}
                                         </p>
