@@ -81,11 +81,9 @@ export default function TalkToUsForm({ lang }: { lang: "en" | "es" }) {
         setIsSubmitting(true);
 
         try {
-            // 1. Prepare the payload with your Web3Forms Access Key
             const payload = {
                 ...parsed.data,
-                // !! MOVE THIS KEY TO .env OR SOMEWHERE SAFER
-                access_key: emailKey, // Get this from web3forms.com
+                access_key: emailKey,
                 subject: `New Lead from ${parsed.data.company || parsed.data.name}`, // Optional: Customizes email subject
             };
 
@@ -130,98 +128,95 @@ export default function TalkToUsForm({ lang }: { lang: "en" | "es" }) {
     }, [isSuccess, message]);
 
     return (
-        <section className=" text-white p-4">
-            <h2 className="mb-6 text-4xl font-semibold">{t.formTitle}</h2>
-            <div className="flex flex-row gap-8">
-                <form className="flex flex-col gap-2" onSubmit={handleSubmit}>
-                    <div className="flex w-full gap-2">
+        <section className="text-white p-4 w-full flex flex-col items-center">
+            <div className="w-full lg:max-w-[calc(450px*2+2rem)]">
+                <h2 className="mb-6 text-4xl lg:text-5xl font-semibold text-left">
+                    {t.formTitle}
+                </h2>
+                <div className="flex flex-col lg:flex-row gap-8 items-center lg:items-center justify-center">
+                    <form
+                        className="flex flex-col gap-2 w-full lg:w-[450px] lg:h-[450px]"
+                        onSubmit={handleSubmit}
+                    >
+                        <div className="flex flex-col sm:flex-row w-full gap-2">
+                            <input
+                                className="flex-1 min-w-0 border border-mauve-600 px-3 py-2 text-lg bg-transparent"
+                                name="name"
+                                placeholder={t.namePlaceholder}
+                                value={formData.name}
+                                onChange={handleChange}
+                                required
+                            />
+
+                            <input
+                                className="flex-1 min-w-0 border border-mauve-600 px-3 py-2 text-lg bg-transparent"
+                                name="company"
+                                placeholder={t.companyPlaceholder}
+                                value={formData.company}
+                                onChange={handleChange}
+                            />
+                        </div>
+
                         <input
-                            className="flex-1 min-w-0 border border-mauve-600 px-3 py-2 text-lg p-2"
-                            name="name"
-                            placeholder={t.namePlaceholder}
-                            value={formData.name}
+                            className="border border-mauve-600 px-3 py-2 text-lg bg-transparent"
+                            name="email"
+                            type="email"
+                            placeholder={t.emailPlaceholder}
+                            value={formData.email}
                             onChange={handleChange}
                             required
                         />
 
-                        <input
-                            className="flex-1 min-w-0 border border-mauve-600 px-3 py-2 text-lg p-2"
-                            name="company"
-                            placeholder={t.companyPlaceholder}
-                            value={formData.company}
+                        <textarea
+                            className="flex-1 min-h-[150px] border border-mauve-600 px-3 py-2 text-lg bg-transparent"
+                            name="project_details"
+                            placeholder={t.projectPlaceholder}
+                            value={formData.project_details}
                             onChange={handleChange}
+                            required
+                        />
+
+                        <button
+                            className={`px-4 py-3 font-semibold text-lg transition-all duration-500 ease-in-out text-black w-full ${
+                                isSubmitting
+                                    ? "cursor-not-allowed opacity-70"
+                                    : "cursor-pointer"
+                            } ${
+                                isSuccess
+                                    ? "bg-green-600 text-white"
+                                    : message && !isSuccess
+                                      ? "bg-red-600 text-white"
+                                      : "bg-white text-black hover:bg-mauve-200"
+                            }`}
+                            type="submit"
+                            disabled={isSubmitting}
+                        >
+                            {isSubmitting
+                                ? t.submitting
+                                : isSuccess
+                                  ? t.success
+                                  : message && !isSuccess
+                                    ? "Error, Please try again."
+                                    : t.submit}
+                        </button>
+                    </form>
+                    <div className="hidden lg:flex items-center justify-center lg:w-[450px] lg:h-[450px]">
+                        <MagnetLines
+                            rows={10}
+                            columns={12}
+                            containerSize="100%"
+                            lineColor="#efefef"
+                            lineWidth="2px"
+                            lineHeight="30px"
+                            baseAngle={-10}
+                            style={{
+                                scale: "1.05",
+                                width: "100%",
+                                height: "100%",
+                            }}
                         />
                     </div>
-
-                    <input
-                        className="border border-mauve-600 px-3 py-2 text-lg p-2"
-                        name="email"
-                        type="email"
-                        placeholder={t.emailPlaceholder}
-                        value={formData.email}
-                        onChange={handleChange}
-                        required
-                    />
-
-                    <textarea
-                        className="h-full border border-mauve-600 px-3 py-2 text-lg p-2"
-                        name="project_details"
-                        placeholder={t.projectPlaceholder}
-                        value={formData.project_details}
-                        onChange={handleChange}
-                        required
-                    />
-
-                    <button
-                        className={`px-4 py-3 font-semibold text-lg transition-all duration-500 ease-in-out text-black ${
-                            isSubmitting
-                                ? "cursor-not-allowed opacity-70"
-                                : "cursor-pointer"
-                        } ${
-                            isSuccess
-                                ? "bg-green-600 text-white"
-                                : message && !isSuccess
-                                  ? "bg-red-600 text-white"
-                                  : "bg-white text-black hover:bg-mauve-200"
-                        }`}
-                        type="submit"
-                        disabled={isSubmitting}
-                    >
-                        {isSubmitting
-                            ? t.submitting
-                            : isSuccess
-                              ? t.success
-                              : message && !isSuccess
-                                ? "Error, Please try again."
-                                : t.submit}
-                    </button>
-
-                    {/* {message ? (
-                        <p
-                            className={
-                                isSuccess ? "text-green-700" : "text-red-700"
-                            }
-                        >
-                            {message}
-                        </p>
-                    ) : null}
-
-                    {true ? (
-                        <p className={true ? "text-green-700" : "text-red-700"}>
-                            successful!
-                        </p>
-                    ) : null} */}
-                </form>
-                <MagnetLines
-                    rows={10}
-                    columns={12}
-                    containerSize="40vmin"
-                    lineColor="#efefef"
-                    lineWidth="2px"
-                    lineHeight="30px"
-                    baseAngle={-10}
-                    style={{ scale: "1.05" }}
-                />
+                </div>
             </div>
         </section>
     );

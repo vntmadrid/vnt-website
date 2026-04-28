@@ -78,7 +78,7 @@ export default async function Home(props: {
     return (
         <>
             {/* <ComingSoonPage /> */}
-            <HomeStickyHeader />
+            <HomeStickyHeader lang={lang} />
 
             {/* Example: Passing sanity data down */}
             <IntroSection
@@ -92,7 +92,7 @@ export default async function Home(props: {
             {/* <IntroSection /> */}
 
             <VntSpaces data={data.vntSpaces} />
-            <EventsSection eventsData={data.events} />
+            <EventsSection eventsData={data.events} lang={lang} />
 
             <CollaborateSection data={data.collaborate} />
             <FoundersSection data={data.founders} />

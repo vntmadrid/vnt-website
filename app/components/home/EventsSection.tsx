@@ -36,17 +36,21 @@ const cardVariants = {
 
 export default function EventsSection({
     eventsData,
+    lang,
 }: {
     eventsData?: { slug: string; title: string; coverImageUrl: string }[];
+    lang: string;
 }) {
     if (!eventsData || eventsData.length === 0) return null;
-    return <EventsSectionInner eventsData={eventsData} />;
+    return <EventsSectionInner eventsData={eventsData} lang={lang} />;
 }
 
 function EventsSectionInner({
     eventsData,
+    lang,
 }: {
     eventsData: { slug: string; title: string; coverImageUrl: string }[];
+    lang: string;
 }) {
     const sectionRef = useRef(null);
     const scrollContainerRef = useRef<HTMLDivElement>(null); // Ref for the scrollable area
@@ -58,6 +62,11 @@ function EventsSectionInner({
     const [startX, setStartX] = useState(0);
     const [scrollLeft, setScrollLeft] = useState(0);
     const [hasMoved, setHasMoved] = useState(false);
+
+    const t = {
+        events: lang === "es" ? "EVENTOS_" : "EVENTS_",
+        viewAll: lang === "es" ? "VER TODO" : "VIEW ALL",
+    };
 
     const { scrollYProgress } = useScroll({
         target: sectionRef,
@@ -119,14 +128,14 @@ function EventsSectionInner({
                 className="relative z-10 flex items-end justify-between px-4 lg:px-8 lg:py-0"
             >
                 <h2 className="font-sans text-3xl px-4 lg:px-6 lg:pr-5.5 pt-2 lg:pt-4 lg:-mb-2 font-bold uppercase text-white bg-mist-900 lg:text-5xl">
-                    EVENTS_
+                    {t.events}
                 </h2>
                 <motion.div initial={{ y: -1 }}>
                     <Link
-                        href="/events"
+                        href={`/${lang}/events`}
                         className="font-sans text-2xl px-3 lg:px-4 pt-1 lg:pt-2 -mb-1.5 lg:text-3xl font-bold uppercase text-white bg-mist-900 "
                     >
-                        VIEW ALL
+                        {t.viewAll}
                     </Link>
                 </motion.div>
             </motion.div>
@@ -169,14 +178,14 @@ function EventsSectionInner({
                             }
                         >
                             <Link
-                                href={`/events/${event.slug}`}
+                                href={`/${lang}/events/${event.slug}`}
                                 onClick={handleLinkClick}
                                 draggable={false} // Prevents native ghost image drag
                                 className="block h-115 w-75 bg-white text-black lg:h-155 lg:w-117.5 overflow-hidden pointer-events-auto"
                             >
                                 <div className="flex h-full flex-col items-center pointer-events-none">
                                     <div className="w-full min-w-0 p-3 lg:p-5">
-                                        <p className="w-full min-w-0 text-center font-semibold text-2xl lg:text-3xl uppercase line-clamp-2">
+                                        <p className="w-full min-w-0 text-center font-semibold text-2xl lg:text-3xl uppercase truncate">
                                             {event.title}
                                         </p>
                                     </div>

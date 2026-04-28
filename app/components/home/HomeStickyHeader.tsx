@@ -4,7 +4,11 @@ import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 
-export default function HomeStickyHeader() {
+interface HomeStickyHeaderProps {
+    lang: string;
+}
+
+export default function HomeStickyHeader({ lang }: HomeStickyHeaderProps) {
     const { scrollY } = useScroll();
     const [hidden, setHidden] = useState(false);
     const [hasLoaded, setHasLoaded] = useState(false);
@@ -55,6 +59,12 @@ export default function HomeStickyHeader() {
         }
     };
 
+    const t = {
+        spaces: lang === "es" ? "Espacios" : "Spaces",
+        collaborate: lang === "es" ? "Colabora" : "Collaborate",
+        events: lang === "es" ? "Eventos" : "Events",
+    };
+
     return (
         <motion.header
             initial="hidden"
@@ -85,7 +95,7 @@ export default function HomeStickyHeader() {
                             onClick={(e) => handleScroll(e, "spaces")}
                             className="block font-sans text-sm font-bold uppercase tracking-widest text-black hover:text-gray-500 bg-white py-1 px-3 transition-colors"
                         >
-                            Spaces
+                            {t.spaces}
                         </Link>
                     </motion.div>
 
@@ -111,7 +121,7 @@ export default function HomeStickyHeader() {
                             onClick={(e) => handleScroll(e, "collaborate")}
                             className="block font-sans text-sm font-bold uppercase tracking-widest text-black hover:text-gray-500 bg-white py-1 px-3 transition-colors"
                         >
-                            Collaborate
+                            {t.collaborate}
                         </Link>
                     </motion.div>
 
@@ -137,7 +147,7 @@ export default function HomeStickyHeader() {
                             onClick={(e) => handleScroll(e, "events")}
                             className="block font-sans text-sm font-bold uppercase tracking-widest text-black hover:text-gray-500 bg-white py-1 px-3 transition-colors"
                         >
-                            Events
+                            {t.events}
                         </Link>
                     </motion.div>
                 </motion.nav>

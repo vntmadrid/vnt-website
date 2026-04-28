@@ -5,8 +5,9 @@ import VntLogo from "@/public/VNT black logo.svg";
 import InitialArtwork from "@/public/images/artwork.jpg";
 import BgConcrete from "@/public/images/BgConcrete.jpg";
 import VntConcrete from "@/public/images/VNTconcrete.jpg";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import { useEffect, useState } from "react";
+import { ChevronDown } from "lucide-react";
 
 interface IntroSectionProps {
     leftTitle?: string;
@@ -26,6 +27,14 @@ export default function IntroSection({
     featuredImage,
 }: IntroSectionProps) {
     const [isAnimating, setIsAnimating] = useState(true);
+
+    const scrollToNext = () => {
+        const viewportHeight = window.innerHeight;
+        window.scrollTo({
+            top: viewportHeight,
+            behavior: "smooth",
+        });
+    };
 
     useEffect(() => {
         const previousRestoration = window.history.scrollRestoration;
@@ -152,6 +161,32 @@ export default function IntroSection({
                     <p className="text-[16px]">{rightBody}</p>
                 </div>
             </motion.div>
+
+            <AnimatePresence>
+                {!isAnimating && (
+                    <motion.button
+                        onClick={scrollToNext}
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ 
+                            opacity: 1, 
+                            y: [0, 10, 0],
+                        }}
+                        exit={{ opacity: 0, y: 20 }}
+                        transition={{
+                            opacity: { duration: 0.5 },
+                            y: {
+                                duration: 2,
+                                repeat: Infinity,
+                                ease: "easeInOut"
+                            }
+                        }}
+                        className="absolute bottom-10 z-20 text-white p-2 cursor-pointer hover:opacity-70 transition-opacity"
+                        aria-label="Scroll to next section"
+                    >
+                        <ChevronDown size={60} strokeWidth={1} />
+                    </motion.button>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

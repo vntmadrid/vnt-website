@@ -2,6 +2,7 @@ import TalkToUsForm from "./TalkToUsForm";
 import { client } from "@/sanity/lib/client";
 import EventsHeader from "@/app/components/events/EventsHeader";
 import EventsCarousel from "./EventsCarousel";
+import ScrollToContact from "@/app/components/events/ScrollToContact";
 
 export default async function EventsPage(props: {
     params: Promise<{ lang: "en" | "es" }>;
@@ -31,7 +32,7 @@ export default async function EventsPage(props: {
     const events = sanityEvents || [];
 
     return (
-        <main className="bg-black text-white min-h-screen">
+        <main className="bg-black text-white min-h-screen overflow-x-hidden">
             <EventsHeader lang={lang} />
 
             <div className="h-[90vh] mb-4 flex items-center">
@@ -49,13 +50,15 @@ export default async function EventsPage(props: {
                 )}
             </div>
 
-            <div className="mx-4 lg:mx-100 border-b border-zinc-800">
+            <div className="mx-4 lg:mx-auto lg:max-w-screen-xl border-b border-zinc-800">
                 {/* <p className="text-zinc-300 uppercase tracking-wide text-sm">{t.formLead}</p> */}
             </div>
 
-            <div className="flex flex-row items-center justify-center px-4 lg:px-6 pt-16 pb-10">
+            <div id="contact-form-section" className="flex flex-row items-center justify-center px-4 lg:px-6 pt-16 pb-10">
                 <TalkToUsForm lang={lang} />
             </div>
+
+            <ScrollToContact lang={lang} />
         </main>
     );
 }
