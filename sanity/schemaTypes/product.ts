@@ -12,6 +12,11 @@ export const product = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: 'description',
+      title: 'Product Description',
+      type: 'localeText', // Typically products need localized text. If not, use 'text'. Since title is localeString, let's try localeText or text. Let's see if localeText exists. wait
+    }),
+    defineField({
       name: 'slug',
       title: 'Slug',
       type: 'slug',
@@ -36,10 +41,16 @@ export const product = defineType({
     }),
     defineField({
       name: 'image',
-      title: 'Product Image',
+      title: 'Legacy Image',
       type: 'image',
-      options: { hotspot: true },
-      validation: (Rule) => Rule.required(),
+      hidden: true, // Hides it from the UI but stops "Unknown field" errors for old products
+    }),
+    defineField({
+      name: 'images',
+      title: 'Product Images',
+      type: 'array',
+      of: [{ type: 'image', options: { hotspot: true } }],
+      validation: (Rule) => Rule.required().min(1),
     }),
     defineField({
       name: 'stripePriceId',
@@ -51,7 +62,7 @@ export const product = defineType({
   preview: {
     select: {
       title: 'title.en',
-      media: 'image',
+      media: 'images.0',
       price: 'price',
       stock: 'stock',
     },

@@ -82,19 +82,19 @@ export default function CollaborateSection({ data }: { data?: CollaborateSection
                         ))}
                     </div>
                 </div>
-                <div className="bg-black px-4 py-6 lg:p-8 pb-7  text-white lg:flex lg:flex-row lg:justify-between lg:items-center">
-                    <p className="mb-2 lg:mb-0 text-4xl lg:max-w-[30%] lg:text-[48px] font-semibold">
+                <div className="bg-black px-4 py-6 sm:p-8 pb-7  text-white sm:flex sm:flex-row sm:justify-between sm:items-center">
+                    <p className="mb-2 sm:mb-0 text-4xl md:max-w-[30%] md:text-[48px] font-semibold">
                         {data?.ctaTitle ? data.ctaTitle : originalCtaTitle}
                     </p>
-                    <div className="flex flex-col items-end">
-                        <p className="mb-6 lg:mb-4 text-xl lg:max-w-[60%] lg:text-right">
+                    <div className="flex flex-col sm:items-end">
+                        <p className="mb-6 sm:mb-4 text-xl sm:max-w-[60%] sm:text-right">
                         {data?.ctaDescription ? data.ctaDescription : originalCtaDesc}
                         </p>
 
                         <Link
                             href={"/events#contact-form-section"}
                             onClick={handleCtaClick}
-                            className="group flex flex-row justify-between border-4 border-white p-2 text-2xl font-semibold lg:w-fit lg:ml-auto transition-all duration-300 hover:bg-white hover:text-black active:scale-95"
+                            className="group flex flex-row justify-between border-4 border-white p-2 text-2xl font-semibold sm:w-fit sm:ml-auto transition-all duration-300 hover:bg-white hover:text-black active:scale-95"
                         >
                             <p>{ctaButtonText}{" "}</p>
                             <p className="transition-transform duration-300 group-hover:translate-x-1">→</p>

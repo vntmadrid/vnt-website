@@ -104,7 +104,7 @@ export default function EventsCarousel({ lang, events }: EventsCarouselProps) {
     };
 
     return (
-        <div className="relative max-w-[100vw]">
+        <div className="relative max-w-[100vw] -mt-24">
             <ul
                 ref={scrollRef}
                 onScroll={updateControls}
@@ -125,7 +125,7 @@ export default function EventsCarousel({ lang, events }: EventsCarouselProps) {
                         /* 1. Added 'transition-transform' here 
                2. Ensure 'hover:-translate-y-2' is here
             */
-                        className="shrink-0 snap-center w-[82vw] max-w-[450px] sm:w-[390px] lg:w-[340px] xl:w-[400px] transition-transform duration-300 ease-out hover:-translate-y-2"
+                        className="shrink-0 snap-center w-[70vw] max-w-[450px] sm:w-[390px] lg:w-[340px] xl:w-[400px] transition-transform duration-300 ease-out hover:-translate-y-2"
                     >
                         <Link
                             href={`/${lang}/events/${event.slug}`}

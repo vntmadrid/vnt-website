@@ -34,13 +34,13 @@ export default function FoundersSection({ data }: { data?: FoundersSectionData }
 
     return (
         <div
-            className="flex h-screen items-center justify-center bg-cover bg-center bg-no-repeat p-5 font-sans lg:h-[576px]"
+            className="flex h-screen items-center justify-center bg-cover bg-center bg-no-repeat p-5 font-sans md:h-[576px]"
             style={{ backgroundImage: `url(${bgUrl})` }}
         >
-            <div className="bg-white text-black lg:flex lg:flex-row lg:items-stretch lg:w-160 lg:p-2.5">
-                <div className="lg:flex lg:flex-col lg:p-3 lg:mr-4 lg:min-w-[314px]">
-                    <div className="p-4 lg:p-0 lg:mb-4">
-                        <p className="text-center text-4xl lg:text-3xl font-semibold lg:text-left whitespace-pre-line">
+            <div className="bg-white text-black md:flex md:flex-row md:items-stretch md:w-160 md:p-2.5">
+                <div className="md:flex md:flex-col md:p-3 md:mr-4 md:min-w-[314px]">
+                    <div className="p-4 md:p-0 md:mb-4">
+                        <p className="text-center text-4xl md:text-3xl font-semibold md:text-left whitespace-pre-line">
                             {displayTitle}
                         </p>
                     </div>
@@ -50,16 +50,16 @@ export default function FoundersSection({ data }: { data?: FoundersSectionData }
                         width={1200}
                         height={900}
                         quality={100}
-                        className="h-65 w-full object-cover lg:hidden"
+                        className="h-65 w-full object-cover md:hidden"
                     />
-                    <div className="flex flex-col gap-4 p-4 lg:p-0">
+                    <div className="flex flex-col gap-4 p-4 md:p-0">
                         {displayFounders.map((founder, index) => (
                             <Fragment key={founder.name || index}>
                                 <div>
-                                    <p className="mb-1 text-lg lg:text-[20px] font-medium">
+                                    <p className="mb-1 text-md md:text-[20px] font-medium">
                                         {founder.name}
                                     </p>
-                                    <p className="text-sm lg:text-[16px] whitespace-pre-line">
+                                    <p className="text-sm md:text-[16px] whitespace-pre-line">
                                         {founder.description}
                                     </p>
                                 </div>
@@ -77,7 +77,7 @@ export default function FoundersSection({ data }: { data?: FoundersSectionData }
                     width={855}
                     height={1389}
                     quality={100}
-                    className="hidden lg:block lg:w-[285px] h-auto object-cover"
+                    className="hidden md:block md:w-[285px] h-auto object-cover"
                 />
             </div>
         </div>

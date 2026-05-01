@@ -59,7 +59,6 @@ export default function IntroSection({
             html.style.overflow = "hidden";
             body.style.overflow = "hidden";
 
-            // Preserve layout width while scroll is locked to avoid post-animation jump.
             if (scrollbarWidth > 0) {
                 body.style.paddingRight = `${scrollbarWidth}px`;
             }
@@ -78,107 +77,163 @@ export default function IntroSection({
 
     return (
         <div className="relative flex min-h-screen items-center justify-center overflow-hidden p-5 pt-8 font-sans">
+            {/* BACKGROUND */}
             <motion.div
                 className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-                style={{ backgroundImage: `url(${BgConcrete.src || backgroundImage})` }}
-                initial={{ scale: 1.5, opacity: 0, filter: "blur(10px)" }}
-                animate={{ scale: 1, opacity: 1, filter: "none" }}
-                transition={{
-                    delay: 0.5,
-                    duration: 1.3,
-                    ease: [0, 0.086, 0, 0.997],
+                style={{
+                    backgroundImage: `url(${BgConcrete.src || backgroundImage})`,
                 }}
-                onAnimationComplete={() => setIsAnimating(false)}
+                initial={{ scale: 1, opacity: 0 }}
+                animate={{ scale: 1.05, opacity: 1 }}
+                transition={{
+                    duration: .6,
+                    ease: "easeOut",
+                    delay: .6
+                }}
             />
 
+            {/* ========================================= */}
+            {/* DESKTOP ANIMATION WRAPPER (lg screens up) */}
+            {/* ========================================= */}
             <motion.div
-                className="bg-white text-black flex flex-row items-center lg:p-6 lg:gap-6 z-10"
+                className="hidden lg:flex bg-white text-black flex-row items-center z-10 relative max-w-max"
                 initial={{
-                    scale: 1.2,
                     opacity: 0,
-                    filter: "blur(10px)",
+                    scale: 0.8,
+                    padding: "0.5rem",
+                    gap: "0rem",
                 }}
                 animate={{
-                    scale: 1,
                     opacity: 1,
-                    filter: "none",
+                    scale: 1,
+                    padding: "1.5rem",
+                    gap: "1.5rem",
                 }}
                 transition={{
-                    delay: 1,
-                    duration: 1.4,
-                    ease: [0, 0.086, 0, 0.997],
+                    opacity: { duration: 0.8 },
+                    scale: { duration: 1.6, ease: [0.76, 0, 0.24, 1] },
+                    padding: {
+                        delay: 0.6,
+                        duration: 1,
+                        ease: [0.16, 1, 0.3, 1],
+                    },
+                    gap: { delay: 0.6, duration: 1, ease: [0.16, 1, 0.3, 1] },
                 }}
+                onAnimationComplete={() => setIsAnimating(false)}
             >
-                {/* left side (desktop only) */}
-                <div className="hidden lg:block text-center w-[200px]">
-                    <p className="text-[20px] font-semibold mb-2">
-                        {leftTitle}
-                    </p>
-                    <p className="text-[16px]">{leftBody}</p>
-                </div>
-                {/* center div */}
-                <div className="lg:max-w-[420px]">
-                    {/* Logo */}
-                    {/* <div className="p-3 lg:p-0 lg:mb-3">
-                        <Image
-                            src={VntLogo}
-                            alt="VNT Logo"
-                            className="h-10 lg:h-[76px]"
-                        />
-                    </div> */}
-                    {/* Center img */}
+                {/* LEFT SIDE TEXT */}
+                <motion.div
+                    className="flex justify-end overflow-hidden"
+                    initial={{ width: 0, opacity: 0 }}
+                    animate={{ width: 200, opacity: 1 }}
+                    transition={{
+                        delay: 0.6,
+                        duration: 1,
+                        ease: [0.16, 1, 0.3, 1],
+                    }}
+                >
+                    <div className="w-[200px] flex-shrink-0 text-center">
+                        <p className="text-[20px] font-semibold mb-2">
+                            {leftTitle}
+                        </p>
+                        <p className="text-[16px]">{leftBody}</p>
+                    </div>
+                </motion.div>
+
+                {/* DESKTOP CENTER IMAGE */}
+                <div className="w-full max-w-[420px] relative z-10 bg-white flex-shrink-0">
                     <Image
                         src={featuredImage || VntConcrete}
                         alt="Initial artwork"
                         width={420}
                         height={420}
-                        className="w-105 h-105 object-cover"
+                        className="w-full aspect-square object-cover"
+                        priority
                     />
-                    {/* Bottom text */}
-                    {/* Mobile version */}
-                    <div className="block lg:hidden p-3">
-                        <p>Built in a former electricity house.</p>
-                        <p className="mb-3">Still generating something.</p>
-                        <div className="flex flex-row justify-between border-t border-gray-300 pt-3 text-sm">
-                            <div>
-                                <p>Calle Novicidad 4</p>
-                                <p>Madrid</p>
-                            </div>
-                            <p> Explore ↓</p>
-                        </div>
-                    </div>
+                </div>
 
-                    {/* Desktop version (artwork description) */}
-                    {/* <div className="hidden lg:block text-center mt-5 text-sm">
-                        <p>details about artpiece</p>
-                    </div> */}
-                </div>
-                {/* right side (desktop only) */}
-                <div className="hidden lg:block text-center w-[200px]">
-                    <p className="text-[20px] font-semibold mb-2">
-                        {rightTitle}
-                    </p>
-                    <p className="text-[16px]">{rightBody}</p>
-                </div>
+                {/* RIGHT SIDE TEXT */}
+                <motion.div
+                    className="flex justify-start overflow-hidden"
+                    initial={{ width: 0, opacity: 0 }}
+                    animate={{ width: 200, opacity: 1 }}
+                    transition={{
+                        delay: 0.6,
+                        duration: 1,
+                        ease: [0.16, 1, 0.3, 1],
+                    }}
+                >
+                    <div className="w-[200px] flex-shrink-0 text-center">
+                        <p className="text-[20px] font-semibold mb-2">
+                            {rightTitle}
+                        </p>
+                        <p className="text-[16px]">{rightBody}</p>
+                    </div>
+                </motion.div>
             </motion.div>
 
+            {/* ========================================= */}
+            {/* MOBILE ANIMATION WRAPPER (below lg screens) */}
+            {/* ========================================= */}
+            <motion.div
+                className="flex lg:hidden flex-col bg-white text-black z-10 relative w-full max-w-[420px] shadow-xl"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+                onAnimationComplete={() => setIsAnimating(false)}
+            >
+                {/* Image container with hidden overflow so we can scale the image safely inside it */}
+                <div className="w-full aspect-square relative overflow-hidden bg-gray-100">
+                    <motion.div
+                        initial={{ scale: 1.15 }}
+                        animate={{ scale: 1 }}
+                        transition={{ duration: 1.8, ease: [0.76, 0, 0.24, 1] }}
+                        className="w-full h-full"
+                    >
+                        <Image
+                            src={featuredImage || VntConcrete}
+                            alt="Initial artwork"
+                            fill
+                            className="object-cover"
+                            priority
+                        />
+                    </motion.div>
+                </div>
+
+                {/* Mobile Text (Fades in slightly after the card appears) */}
+                <motion.div
+                    className="p-4 bg-white"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.6, duration: 0.8 }}
+                >
+                    <p>Built in a former electricity house.</p>
+                    <p className="mb-3">Still generating something.</p>
+                    <div className="flex flex-row justify-between border-t border-gray-300 pt-3 text-sm">
+                        <div>
+                            <p>Calle Novicidad 4</p>
+                            <p>Madrid</p>
+                        </div>
+                        <p> Explore ↓</p>
+                    </div>
+                </motion.div>
+            </motion.div>
+
+            {/* SCROLL ARROW */}
             <AnimatePresence>
                 {!isAnimating && (
                     <motion.button
                         onClick={scrollToNext}
                         initial={{ opacity: 0, y: -20 }}
-                        animate={{ 
-                            opacity: 1, 
-                            y: [0, 10, 0],
-                        }}
+                        animate={{ opacity: 1, y: [0, 10, 0] }}
                         exit={{ opacity: 0, y: 20 }}
                         transition={{
                             opacity: { duration: 0.5 },
                             y: {
                                 duration: 2,
                                 repeat: Infinity,
-                                ease: "easeInOut"
-                            }
+                                ease: "easeInOut",
+                            },
                         }}
                         className="absolute bottom-10 z-20 text-white p-2 cursor-pointer hover:opacity-70 transition-opacity"
                         aria-label="Scroll to next section"

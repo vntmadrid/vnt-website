@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Poppins } from "next/font/google";
 import { ViewTransitions } from "next-view-transitions";
 import "./globals.css";
@@ -21,10 +21,13 @@ const poppins = Poppins({
     weight: ["400", "500", "600", "700"],
 });
 
+export const viewport: Viewport = {
+    themeColor: "#000000",
+};
+
 export const metadata: Metadata = {
     title: "VNT Madrid",
     description: "The official website for VNT Madrid",
-    themeColor: "#000000",
 };
 
 export default function RootLayout({

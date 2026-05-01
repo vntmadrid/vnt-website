@@ -120,7 +120,7 @@ function EventsSectionInner({
     };
 
     return (
-        <div ref={sectionRef} id="events" className="relative -mt-11 lg:-mt-16">
+        <div ref={sectionRef} id="events" className="relative -mt-10.5 lg:-mt-16">
             <motion.div
                 initial={{ y: 80 }}
                 animate={isTriggered ? { y: 0 } : { y: 80 }}

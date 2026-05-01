@@ -1,7 +1,7 @@
 import SiteFooterSection from "../components/home/SiteFooterSection";
 import { client } from "@/sanity/lib/client";
 
-export default async function LangLayout({ children, params }: { children: React.ReactNode, params: Promise<{ lang: 'en' | 'es' }> }) {
+export default async function LangLayout({ children, params }: { children: React.ReactNode, params: Promise<{ lang: string }> }) {
     const p = await params;
     const lang = p.lang;
     
@@ -20,7 +20,7 @@ export default async function LangLayout({ children, params }: { children: React
     return (
         <>
             {children}
-            <SiteFooterSection data={footerData} lang={lang} />
+            <SiteFooterSection data={footerData} lang={lang as "en" | "es"} />
         </>
     );
 }

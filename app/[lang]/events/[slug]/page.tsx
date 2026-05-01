@@ -6,6 +6,7 @@ import EventsHeader from "@/app/components/events/EventsHeader";
 import { client } from "@/sanity/lib/client";
 import { notFound } from "next/navigation";
 import { ArrowRight } from "lucide-react";
+import { urlFor } from "@/sanity/lib/image";
 
 type EventPageProps = {
     params: Promise<{ lang: "en" | "es"; slug: string }>;
@@ -81,7 +82,8 @@ export default async function EventPage(props: EventPageProps) {
                 "title": title[$lang],
                 price,
                 stock,
-                "imageUrl": image.asset->url
+                images,
+                slug,
             }
         },
         "allEvents": *[_type == "event"] | order(_createdAt asc) {
@@ -143,9 +145,7 @@ export default async function EventPage(props: EventPageProps) {
                         height={1080}
                     />
 
-                    <div 
-                        className="pointer-events-none absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-black/90 to-transparent z-0"
-                    />
+                    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-black/90 to-transparent z-0" />
                 </div>
 
                 <div
@@ -281,41 +281,55 @@ export default async function EventPage(props: EventPageProps) {
                 <div className="w-full border-y border-zinc-600 bg-black pt-12 pb-16">
                     <div className="px-4 lg:px-6 mb-8 flex justify-between items-end">
                         <h2 className="text-3xl font-semibold uppercase text-white">
-                            {lang === 'es' ? 'La Tienda del Evento' : 'Event Shop'}
+                            {lang === "es"
+                                ? "La Tienda del Evento"
+                                : "Event Shop"}
                         </h2>
                     </div>
-                    
+
                     {/* Horizontal Scroll Container */}
                     <div className="flex w-full overflow-x-auto snap-x snap-mandatory hide-scrollbar gap-4 px-4 lg:px-6">
                         {event.products.map((product: any) => {
                             const isSoldOut = product.stock === 0;
-                            const isLowStock = product.stock > 0 && product.stock <= 5;
+                            const isLowStock =
+                                product.stock > 0 && product.stock <= 5;
+
+                            console.log("Product in /event slug:", product);
 
                             return (
-                                <div 
-                                    key={product._id} 
+                                <div
+                                    key={product._id}
                                     className="flex-none w-[280px] lg:w-[320px] snap-start group"
                                 >
                                     {/* Product Image */}
                                     <div className="relative w-full aspect-[3/4] bg-zinc-900 mb-4 overflow-hidden">
-                                        {product.imageUrl && (
-                                            <Image 
-                                                src={product.imageUrl} 
-                                                alt={product.title}
-                                                fill
-                                                className={`object-cover transition-transform duration-500 ${isSoldOut ? 'opacity-50 grayscale' : 'group-hover:scale-105'}`}
-                                            />
-                                        )}
+                                        {product.images &&
+                                            product.images.length > 0 && (
+                                                <Image
+                                                    src={urlFor(
+                                                        product.images[0],
+                                                    ).url()}
+                                                    alt={product.title}
+                                                    fill
+                                                    className={`object-cover transition-transform duration-500 ${
+                                                        isSoldOut
+                                                            ? "opacity-50 grayscale"
+                                                            : "group-hover:scale-105"
+                                                    }`}
+                                                />
+                                            )}
                                         {/* Optional Overlays for Sold Out */}
                                         {isSoldOut && (
                                             <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-10 pointer-events-none">
                                                 <span className="text-white uppercase font-semibold tracking-widest border border-white px-4 py-2">
-                                                    {lang === 'es' ? 'Agotado' : 'Sold Out'}
+                                                    {lang === "es"
+                                                        ? "Agotado"
+                                                        : "Sold Out"}
                                                 </span>
                                             </div>
                                         )}
                                     </div>
-                                    
+
                                     {/* Product Info */}
                                     <div className="flex justify-between items-start text-white">
                                         <div>
@@ -325,32 +339,47 @@ export default async function EventPage(props: EventPageProps) {
                                             {/* Stock Status text */}
                                             {isSoldOut ? (
                                                 <p className="text-sm text-zinc-500 uppercase mt-1">
-                                                    {lang === 'es' ? 'Sin stock' : 'Out of stock'}
+                                                    {lang === "es"
+                                                        ? "Sin stock"
+                                                        : "Out of stock"}
                                                 </p>
                                             ) : (
-                                                <p className={`text-sm uppercase mt-1 ${isLowStock ? 'text-orange-400' : 'text-zinc-400'}`}>
-                                                    {lang === 'es' ? `${product.stock} disponibles` : `${product.stock} available`}
-                                                    {isLowStock && (lang === 'es' ? ' - ¡Casi agotado!' : ' - Low stock!')}
+                                                <p
+                                                    className={`text-sm uppercase mt-1 ${isLowStock ? "text-orange-400" : "text-zinc-400"}`}
+                                                >
+                                                    {lang === "es"
+                                                        ? `${product.stock} disponibles`
+                                                        : `${product.stock} available`}
+                                                    {isLowStock &&
+                                                        (lang === "es"
+                                                            ? " - ¡Casi agotado!"
+                                                            : " - Low stock!")}
                                                 </p>
                                             )}
                                         </div>
-                                        <p className="text-lg whitespace-nowrap">€{product.price}</p>
+                                        <p className="text-lg whitespace-nowrap">
+                                            €{product.price}
+                                        </p>
                                     </div>
-                                    
+
                                     {/* Buy Button */}
-                                    <button 
-                                        disabled={isSoldOut}
-                                        className={`w-full mt-4 border py-3 uppercase text-sm tracking-wider transition-colors 
-                                            ${isSoldOut 
-                                                ? 'border-zinc-800 text-zinc-600 cursor-not-allowed' 
-                                                : 'border-white text-white hover:bg-white hover:text-black'
-                                            }`}
+                                    <Link
+                                        href={`/${lang}/shop/${product.slug.current}`}
+                                        className={`block w-full mt-4 border py-3 uppercase text-sm tracking-wider transition-colors text-center 
+                                        ${
+                                            isSoldOut
+                                                ? "border-zinc-800 text-zinc-600 cursor-not-allowed pointer-events-none"
+                                                : "border-white text-white hover:bg-white hover:text-black"
+                                        }`}
                                     >
-                                        {isSoldOut 
-                                            ? (lang === 'es' ? 'Agotado' : 'Sold Out') 
-                                            : (lang === 'es' ? 'Añadir al carrito' : 'Add to Cart')
-                                        }
-                                    </button>
+                                        {isSoldOut
+                                            ? lang === "es"
+                                                ? "Agotado"
+                                                : "Sold Out"
+                                            : lang === "es"
+                                              ? "Ver"
+                                              : "View"}
+                                    </Link>
                                 </div>
                             );
                         })}

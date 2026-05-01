@@ -60,7 +60,7 @@ export default function HomeStickyHeader({ lang }: HomeStickyHeaderProps) {
     };
 
     const t = {
-        spaces: lang === "es" ? "Espacios" : "Spaces",
+        spaces: lang === "es" ? "Tienda" : "Store",
         collaborate: lang === "es" ? "Colabora" : "Collaborate",
         events: lang === "es" ? "Eventos" : "Events",
     };
@@ -76,23 +76,33 @@ export default function HomeStickyHeader({ lang }: HomeStickyHeaderProps) {
                     {/* SPACES: Drags behind during intial load, shorter duration on scroll */}
                     <motion.div
                         variants={{
-                            visible: { 
-                                y: 0, 
-                                opacity: 1, 
-                                transition: hasLoaded 
-                                  ? { duration: 0.3, ease: [0, 0.086, 0, 0.997], delay: 0.05 } 
-                                  : { duration: 1.2, ease: [0, 0.086, 0, 0.997], delay: 1.6 } 
+                            visible: {
+                                y: 0,
+                                opacity: 1,
+                                transition: hasLoaded
+                                    ? {
+                                          duration: 0.3,
+                                          ease: [0, 0.086, 0, 0.997],
+                                          delay: 0.05,
+                                      }
+                                    : {
+                                          duration: 1.2,
+                                          ease: [0, 0.086, 0, 0.997],
+                                          delay: 1.3,
+                                      },
                             },
-                            hidden: { 
-                                y: -60, 
-                                opacity: 0, 
-                                transition: { duration: 0.3, ease: "easeInOut" } 
-                            }
+                            hidden: {
+                                y: -60,
+                                opacity: 0,
+                                transition: {
+                                    duration: 0.3,
+                                    ease: "easeInOut",
+                                },
+                            },
                         }}
                     >
                         <Link
-                            href="#spaces"
-                            onClick={(e) => handleScroll(e, "spaces")}
+                            href={`/${lang}/shop`} // Direct path to your store
                             className="block font-sans text-sm font-bold uppercase tracking-widest text-black hover:text-gray-500 bg-white py-1 px-3 transition-colors"
                         >
                             {t.spaces}
@@ -102,18 +112,28 @@ export default function HomeStickyHeader({ lang }: HomeStickyHeaderProps) {
                     {/* COLLABORATE: Center, leads the animation */}
                     <motion.div
                         variants={{
-                            visible: { 
-                                y: 0, 
-                                opacity: 1, 
-                                transition: hasLoaded 
-                                  ? { duration: 0.25, ease: [0, 0.086, 0, 0.997] } 
-                                  : { duration: 0.8, ease: [0, 0.086, 0, 0.997], delay: 1.5 } 
+                            visible: {
+                                y: 0,
+                                opacity: 1,
+                                transition: hasLoaded
+                                    ? {
+                                          duration: 0.25,
+                                          ease: [0, 0.086, 0, 0.997],
+                                      }
+                                    : {
+                                          duration: 0.8,
+                                          ease: [0, 0.086, 0, 0.997],
+                                          delay: 1.2,
+                                      },
                             },
-                            hidden: { 
-                                y: -60, 
-                                opacity: 0, 
-                                transition: { duration: 0.25, ease: "easeInOut" } 
-                            }
+                            hidden: {
+                                y: -60,
+                                opacity: 0,
+                                transition: {
+                                    duration: 0.25,
+                                    ease: "easeInOut",
+                                },
+                            },
                         }}
                     >
                         <Link
@@ -128,18 +148,29 @@ export default function HomeStickyHeader({ lang }: HomeStickyHeaderProps) {
                     {/* EVENTS: Drags behind during intial load, shorter duration on scroll */}
                     <motion.div
                         variants={{
-                            visible: { 
-                                y: 0, 
-                                opacity: 1, 
-                                transition: hasLoaded 
-                                  ? { duration: 0.3, ease: [0, 0.086, 0, 0.997], delay: 0.05 } 
-                                  : { duration: 1.2, ease: [0, 0.086, 0, 0.997], delay: 1.6 } 
+                            visible: {
+                                y: 0,
+                                opacity: 1,
+                                transition: hasLoaded
+                                    ? {
+                                          duration: 0.3,
+                                          ease: [0, 0.086, 0, 0.997],
+                                          delay: 0.05,
+                                      }
+                                    : {
+                                          duration: 1.2,
+                                          ease: [0, 0.086, 0, 0.997],
+                                          delay: 1.3,
+                                      },
                             },
-                            hidden: { 
-                                y: -60, 
-                                opacity: 0, 
-                                transition: { duration: 0.3, ease: "easeInOut" } 
-                            }
+                            hidden: {
+                                y: -60,
+                                opacity: 0,
+                                transition: {
+                                    duration: 0.3,
+                                    ease: "easeInOut",
+                                },
+                            },
                         }}
                     >
                         <Link
