@@ -5,6 +5,7 @@ import { ShoppingBag, X, Plus, Minus, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
 import { useState, useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import { loadStripe } from "@stripe/stripe-js";
 
@@ -12,13 +13,28 @@ import { loadStripe } from "@stripe/stripe-js";
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 export default function CartDrawer({ lang }: { lang: string }) {
-  const { items, isOpen, closeCart, updateQuantity, removeItem, getTotal } = useCartStore();
+  const { items, isOpen, closeCart, updateQuantity, removeItem, getTotal, clearCart } = useCartStore();
   const [mounted, setMounted] = useState(false);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [deliveryMethod, setDeliveryMethod] = useState<"shipping" | "pickup">("shipping");
+
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (mounted && searchParams.get('success') === 'true') {
+      clearCart();
+      // Remove the success param from URL without refreshing
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete('success');
+      const newUrl = params.toString() ? `?${params.toString()}` : window.location.pathname;
+      router.replace(newUrl, { scroll: false });
+    }
+  }, [mounted, searchParams, clearCart, router]);
 
   if (!mounted) return null;
 
@@ -28,16 +44,16 @@ export default function CartDrawer({ lang }: { lang: string }) {
       const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items, lang }),
+        body: JSON.stringify({ items, lang, deliveryMethod }),
       });
       const data = await res.json();
       
       if (!res.ok) throw new Error(data.message || 'Checkout failed');
       
-      const stripe = await stripePromise;
-      if (stripe) {
-        // @ts-ignore
-        await stripe.redirectToCheckout({ sessionId: data.sessionId });
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error('No checkout URL returned from Stripe');
       }
     } catch (err) {
       console.error(err);
@@ -66,7 +82,7 @@ export default function CartDrawer({ lang }: { lang: string }) {
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed top-0 right-0 h-full w-full sm:w-[400px] bg-[#1a1a1a] text-white z-50 flex flex-col border-l border-white/10 shadow-2xl"
+            className="fixed top-0 right-0 h-full w-full sm:w-100 bg-[#1a1a1a] text-white z-50 flex flex-col border-l border-white/10 shadow-2xl"
           >
             {/* Header */}
             <div className="p-6 border-b border-white/10 flex justify-between items-center">
@@ -97,7 +113,7 @@ export default function CartDrawer({ lang }: { lang: string }) {
                 items.map((item) => (
                   <div key={item.id} className="flex gap-4">
                     {/* Image */}
-                    <div className="relative w-20 h-24 bg-white/5 rounded overflow-hidden flex-shrink-0">
+                    <div className="relative w-20 h-24 bg-white/5 rounded overflow-hidden shrink-0">
                       {item.image && (
                         <Image
                           src={urlFor(item.image).width(160).height(200).url()}
@@ -157,6 +173,34 @@ export default function CartDrawer({ lang }: { lang: string }) {
             {/* Footer */}
             {items.length > 0 && (
               <div className="p-6 border-t border-white/10 bg-[#141414]">
+                
+                {/* Delivery Method Selection */}
+                <div className="mb-6 space-y-3">
+                  <span className="text-white/60 text-sm tracking-tighter uppercase font-medium">Delivery Method</span>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setDeliveryMethod("shipping")}
+                      className={`flex-1 py-3 text-sm rounded-lg border transition-colors ${
+                        deliveryMethod === "shipping" 
+                          ? "bg-white text-black border-white" 
+                          : "bg-transparent text-white/60 border-white/20 hover:border-white/50"
+                      }`}
+                    >
+                      Ship to me
+                    </button>
+                    <button
+                      onClick={() => setDeliveryMethod("pickup")}
+                      className={`flex-1 py-3 text-sm rounded-lg border transition-colors ${
+                        deliveryMethod === "pickup" 
+                          ? "bg-white text-black border-white" 
+                          : "bg-transparent text-white/60 border-white/20 hover:border-white/50"
+                      }`}
+                    >
+                      Pick up in Gallery
+                    </button>
+                  </div>
+                </div>
+
                 <div className="flex justify-between items-center mb-6 text-lg tracking-tighter">
                   <span className="text-white/60">SUBTOTAL</span>
                   <span>€{getTotal().toFixed(2)}</span>
