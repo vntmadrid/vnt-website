@@ -164,7 +164,7 @@ export default function ProductGrid({ products, lang }: ProductGridProps) {
                 </div>
 
                 {/* Filters & Toggles */}
-                <div className="flex flex-row items-center gap-6 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
+                <div className="flex flex-row justify-between gap-6 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
                     {/* Group Toggle */}
                     <label className="flex items-center gap-3 text-sm text-white/90 cursor-pointer whitespace-nowrap hidden sm:flex hover:text-white transition-colors">
                         <input

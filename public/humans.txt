@@ -7,4 +7,4 @@ Story: Built my own path to Spain through a self secured internship after my uni
 
 /* SITE */
 Languages: English, Spanish
-Components: Next.js, React, Tailwind CSS, Sanity CMS, Framer motion, React Bits
+Components: Next.js, React, Tailwind CSS, Sanity CMS, Stripe, Framer motion, React Bits

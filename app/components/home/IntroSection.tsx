@@ -16,6 +16,8 @@ interface IntroSectionProps {
     rightBody?: string;
     backgroundImage?: string;
     featuredImage?: string;
+    address?: string;
+    mobileTitle?: string;
 }
 
 export default function IntroSection({
@@ -25,6 +27,8 @@ export default function IntroSection({
     rightBody,
     backgroundImage,
     featuredImage,
+    address,
+    mobileTitle,
 }: IntroSectionProps) {
     const [isAnimating, setIsAnimating] = useState(true);
 
@@ -86,9 +90,9 @@ export default function IntroSection({
                 initial={{ scale: 1, opacity: 0 }}
                 animate={{ scale: 1.05, opacity: 1 }}
                 transition={{
-                    duration: .6,
+                    duration: 0.6,
                     ease: "easeOut",
-                    delay: .6
+                    delay: 0.6,
                 }}
             />
 
@@ -134,7 +138,16 @@ export default function IntroSection({
                 >
                     <div className="w-[200px] flex-shrink-0 text-center">
                         <p className="text-[20px] font-semibold mb-2">
-                            {leftTitle}
+                            {leftTitle?.toLowerCase().startsWith("vnt") ? (
+                                <>
+                                    <span className="block">
+                                        {leftTitle.slice(0, 3)}
+                                    </span>
+                                    {leftTitle.slice(3)}
+                                </>
+                            ) : (
+                                leftTitle
+                            )}
                         </p>
                         <p className="text-[16px]">{leftBody}</p>
                     </div>
@@ -165,7 +178,16 @@ export default function IntroSection({
                 >
                     <div className="w-[200px] flex-shrink-0 text-center">
                         <p className="text-[20px] font-semibold mb-2">
-                            {rightTitle}
+                            {rightTitle?.toLowerCase().startsWith("vnt") ? (
+                                <>
+                                    <span className="block">
+                                        {rightTitle.slice(0, 3)}
+                                    </span>
+                                    {rightTitle.slice(3)}
+                                </>
+                            ) : (
+                                rightTitle
+                            )}
                         </p>
                         <p className="text-[16px]">{rightBody}</p>
                     </div>
@@ -187,7 +209,7 @@ export default function IntroSection({
                     <motion.div
                         initial={{ scale: 1.15 }}
                         animate={{ scale: 1 }}
-                        transition={{ duration: 1.8, ease: [0.76, 0, 0.24, 1] }}
+                        transition={{ duration: 1.2, delay: 0.2, ease: [0.76, 0, 0.24, 1], }}
                         className="w-full h-full"
                     >
                         <Image
@@ -202,19 +224,19 @@ export default function IntroSection({
 
                 {/* Mobile Text (Fades in slightly after the card appears) */}
                 <motion.div
-                    className="p-4 bg-white"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.6, duration: 0.8 }}
+                    className="bg-white overflow-hidden"
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    transition={{ duration: 1.2, delay: 0.2, ease: [0.76, 0, 0.24, 1] }}
                 >
-                    <p>Built in a former electricity house.</p>
-                    <p className="mb-3">Still generating something.</p>
-                    <div className="flex flex-row justify-between border-t border-gray-300 pt-3 text-sm">
-                        <div>
-                            <p>Calle Novicidad 4</p>
-                            <p>Madrid</p>
+                    <div className="p-4">
+                        <p className="mb-3">{mobileTitle || "Built in a former electricity house."}</p>
+                        <div className="flex flex-row justify-between border-t border-gray-300 pt-3 text-sm">
+                            <div className="whitespace-pre-line">
+                                <p>{address || "C. Noviciado 4, 28015 Madrid"}</p>
+                            </div>
+                            <button onClick={scrollToNext}> Explore ↓</button>
                         </div>
-                        <p> Explore ↓</p>
                     </div>
                 </motion.div>
             </motion.div>
@@ -235,7 +257,7 @@ export default function IntroSection({
                                 ease: "easeInOut",
                             },
                         }}
-                        className="absolute bottom-10 z-20 text-white p-2 cursor-pointer hover:opacity-70 transition-opacity"
+                        className="absolute hidden lg:block bottom-10 z-20 text-white p-2 cursor-pointer hover:opacity-70 transition-opacity"
                         aria-label="Scroll to next section"
                     >
                         <ChevronDown size={60} strokeWidth={1} />

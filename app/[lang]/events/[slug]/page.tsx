@@ -7,6 +7,28 @@ import { client } from "@/sanity/lib/client";
 import { notFound } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { urlFor } from "@/sanity/lib/image";
+import { Metadata } from "next";
+
+export async function generateMetadata(props: {
+    params: Promise<{ lang: "en" | "es"; slug: string }>;
+}): Promise<Metadata> {
+    const params = await props.params;
+    const lang = params.lang;
+    const slug = params.slug;
+
+    const query = `*[_type == "event" && slug.current == $slug][0] {
+        "title": title[$lang],
+        "description": description[$lang]
+    }`;
+    const event = await client.fetch(query, { slug, lang });
+
+    if (!event) return {};
+
+    return {
+        title: `${event.title} | Events | VNT Madrid`,
+        description: event.description || "Event at VNT Madrid",
+    };
+}
 
 type EventPageProps = {
     params: Promise<{ lang: "en" | "es"; slug: string }>;
@@ -149,7 +171,7 @@ export default async function EventPage(props: EventPageProps) {
                 </div>
 
                 <div
-                    className="absolute bottom-4 left-4 bg-white p-4 lg:p-5 px-6 lg:min-w-[454px] text-black z-10"
+                    className="absolute bottom-4 left-4 bg-white p-4 lg:p-5 px-6 lg:min-w-[454px] max-w-[90vw] text-black z-10"
                     style={{
                         viewTransitionName: `event-label-${slug.replace(/[^a-zA-Z0-9]/g, "-")}`,
                     }}
@@ -160,7 +182,7 @@ export default async function EventPage(props: EventPageProps) {
                 </div>
             </div>
             <div className="lg:flex lg:flex-row lg:p-4">
-                <div className="p-2 w-full">
+                <div className="p-4 w-full">
                     {/* Event description */}
                     <p className="mb-2 line text-base/8 text-white lg:w-[80%] lg:text-[24px] lg:leading-12 lg:mb-8 whitespace-pre-wrap">
                         {event.description}
@@ -278,7 +300,7 @@ export default async function EventPage(props: EventPageProps) {
 
             {/* --- EXCLUSIVE EVENT SHOP SECTION --- */}
             {event.products && event.products.length > 0 && (
-                <div className="w-full border-y border-zinc-600 bg-black pt-12 pb-16">
+                <div className="w-full border-t border-zinc-800 bg-black pt-8 pb-16">
                     <div className="px-4 lg:px-6 mb-8 flex justify-between items-end">
                         <h2 className="text-3xl font-semibold uppercase text-white">
                             {lang === "es"
@@ -345,7 +367,7 @@ export default async function EventPage(props: EventPageProps) {
                                                 </p>
                                             ) : (
                                                 <p
-                                                    className={`text-sm uppercase mt-1 ${isLowStock ? "text-orange-400" : "text-zinc-400"}`}
+                                                    className={`text-sm uppercase mt-1  text-zinc-400`}
                                                 >
                                                     {lang === "es"
                                                         ? `${product.stock} disponibles`
@@ -362,10 +384,10 @@ export default async function EventPage(props: EventPageProps) {
                                         </p>
                                     </div>
 
-                                    {/* Buy Button */}
+                                    {/* View Button */}
                                     <Link
                                         href={`/${lang}/shop/${product.slug.current}`}
-                                        className={`block w-full mt-4 border py-3 uppercase text-sm tracking-wider transition-colors text-center 
+                                        className={`block w-full mt-4 border py-3 uppercase text-md font-medium tracking-wider transition-colors text-center 
                                         ${
                                             isSoldOut
                                                 ? "border-zinc-800 text-zinc-600 cursor-not-allowed pointer-events-none"

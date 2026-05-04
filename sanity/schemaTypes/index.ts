@@ -8,7 +8,8 @@ import { collaborateSection } from './collaborateSection'
 import { foundersSection } from './foundersSection'
 import { siteFooter } from './siteFooter'
 import { product } from './product'
+import { order } from './order'
 
 export const schema: { types: SchemaTypeDefinition[] } = {
-  types: [localeString, localeText, introSection, vntSpaces, event, collaborateSection, foundersSection, siteFooter, product],
+  types: [localeString, localeText, introSection, vntSpaces, event, collaborateSection, foundersSection, siteFooter, product, order],
 }

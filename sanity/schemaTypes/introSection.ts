@@ -26,6 +26,12 @@ export const introSection = defineType({
       type: 'localeString',
     }),
     defineField({
+      name: 'mobileTitle',
+      title: 'Mobile Heading',
+      description: 'Used on mobile instead of desktop titles',
+      type: 'localeString',
+    }),
+    defineField({
       name: 'backgroundImage',
       title: 'background Image',
       type: 'image',

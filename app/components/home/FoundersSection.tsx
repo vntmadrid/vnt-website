@@ -34,7 +34,7 @@ export default function FoundersSection({ data }: { data?: FoundersSectionData }
 
     return (
         <div
-            className="flex h-screen items-center justify-center bg-cover bg-center bg-no-repeat p-5 font-sans md:h-[576px]"
+            className="flex h-screen items-center justify-center bg-cover bg-center bg-no-repeat p-5 font-sans min-h-[720px] md:h-[576px]"
             style={{ backgroundImage: `url(${bgUrl})` }}
         >
             <div className="bg-white text-black md:flex md:flex-row md:items-stretch md:w-160 md:p-2.5">

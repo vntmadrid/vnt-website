@@ -132,7 +132,7 @@ export default function vntSpaces({ data }: any) {
                 {/* Dark overlay for text readability (stays constant over both images) */}
                 {/* <div className="absolute inset-0 bg-black/40 z-10 pointer-events-none" /> */}
 
-                {/* HOVERING DIV (Content Panel) - DESKTOP ONLY NOW */}
+                {/* HOVERING DIV (Content Panel) - DESKTOP ONLY */}
                 <motion.div
                     className={`hidden lg:block absolute z-20 bg-white text-black font-sans
                         bottom-3 left-3 w-[calc(100%-24px)] ${isMenuOpen ? "h-[35vh]" : "h-[25vh]"} rounded-none overflow-hidden transition-[height] duration-500 ease-in-out
@@ -141,7 +141,7 @@ export default function vntSpaces({ data }: any) {
                 >
                     {/* Child 1 - title or menu (scrollable area) */}
                     <div
-                        className={`absolute inset-0 p-4 lg:p-6 pb-24 lg:pb-32 ${isMenuOpen && showCoffeeContent && menuScrollable ? "overflow-y-auto" : "overflow-hidden"} z-10`}
+                        className={`absolute inset-0 p-4 lg:p-5 xl:p-6 ${isMenuOpen && showCoffeeContent && menuScrollable ? "overflow-y-auto" : "overflow-hidden"} z-10`}
                     >
                         <AnimatePresence mode="wait">
                             {isMenuOpen && showCoffeeContent ? (
@@ -221,7 +221,7 @@ export default function vntSpaces({ data }: any) {
                             style={{
                                 opacity: CoffeeGalleryContentOpacity,
                             }}
-                            className={`absolute bottom-0 left-0 w-full flex flex-row justify-between border-t lg:border-none p-3 pt-3 lg:p-6 text-sm items-center z-30 pointer-events-none ${isMenuOpen ? "border-transparent" : "border-gray-300 bg-white"}`}
+                            className={`absolute bottom-0 left-0 w-full flex flex-row justify-between border-t lg:border-none p-3 pt-3 lg:p-5 xl:p-6 text-sm items-center z-30 pointer-events-none ${isMenuOpen ? "border-transparent" : "border-gray-300 bg-white"}`}
                         >
                             {/* Gradient Overlay for the menu scroll */}
                             {isMenuOpen && (
@@ -229,7 +229,7 @@ export default function vntSpaces({ data }: any) {
                             )}
 
                             <div
-                                className={`max-w-[70%] lg:max-w-[70%] text-sm lg:text-[20px] transition-opacity duration-300 pointer-events-auto ${isMenuOpen ? "opacity-0 pointer-events-none" : "opacity-100"}`}
+                                className={`max-w-[70%] lg:max-w-[70%] text-sm lg:text-base xl:text-xl transition-opacity duration-300 pointer-events-auto ${isMenuOpen ? "opacity-0 pointer-events-none" : "opacity-100"}`}
                             >
                                 <p>
                                     {data?.coffeeDesc ||
@@ -249,9 +249,9 @@ export default function vntSpaces({ data }: any) {
                     ) : (
                         <motion.div
                             style={{ opacity: ConceptStoreContentOpacity }}
-                            className="absolute bottom-0 left-0 w-full flex flex-row items-center justify-between border-t border-gray-300 lg:border-none px-3 pt-3 pb-3 lg:p-6 text-sm z-30 pointer-events-none bg-white"
+                            className="absolute bottom-0 left-0 w-full flex flex-row items-center justify-between border-t border-gray-300 lg:border-none px-3 pt-3 pb-3 lg:p-5 xl:p-6 text-sm z-30 pointer-events-none bg-white"
                         >
-                            <div className="text-sm lg:text-[20px] pointer-events-auto max-w-[70%] lg:max-w-none">
+                            <div className="text-sm lg:text-base xl:text-xl pointer-events-auto max-w-[70%] lg:max-w-none">
                                 <p>
                                     {data?.conceptDesc ||
                                         "90m² of rotating design, fashion, and art."}
@@ -266,37 +266,50 @@ export default function vntSpaces({ data }: any) {
             <div className="block lg:hidden w-full bg-black">
                 {/* Coffee Gallery Section */}
                 <section className="relative w-full h-screen">
-                    <div 
+                    <div
                         className="absolute inset-0 bg-cover bg-center"
-                        style={{ backgroundImage: `url(${data?.coffeeBgUrl || CoffeeGalleryBg.src})` }}
+                        style={{
+                            backgroundImage: `url(${data?.coffeeBgUrl || CoffeeGalleryBg.src})`,
+                        }}
                     />
                     <div className="absolute inset-0 flex flex-col justify-end p-3 pb-3 pointer-events-none">
-                        <div className={`w-full bg-white text-black font-sans rounded-none transition-[height] duration-500 ease-in-out pointer-events-auto flex flex-col justify-between ${isMenuOpen ? "h-[65vh]" : "h-[25vh]"}`}>
-                            <div className={`p-4 flex-1 ${isMenuOpen ? "overflow-y-auto" : "overflow-hidden"}`}>
+                        <div
+                            className={`w-full bg-white text-black font-sans rounded-none transition-[height] duration-500 ease-in-out pointer-events-auto flex flex-col justify-between ${isMenuOpen ? "h-[65vh]" : "h-[25vh]"}`}
+                        >
+                            <div
+                                className={`p-4 flex-1 ${isMenuOpen ? "overflow-y-auto" : "overflow-hidden"}`}
+                            >
                                 {isMenuOpen ? (
                                     <MenuContent menuData={data} />
                                 ) : (
                                     <>
                                         <p className="text-sm">
-                                            {data?.coffeeLabel || "Coffee_gallery"}
+                                            {data?.coffeeLabel ||
+                                                "Coffee_gallery"}
                                         </p>
                                         <p className="text-xl sm:text-2xl font-medium leading-tight mt-2 min-h-[60px]">
-                                            {data?.coffeeTitle || "The smell of coffee. The pull of art. A space that was always meant to feel like this."}
+                                            {data?.coffeeTitle ||
+                                                "The smell of coffee. The pull of art. A space that was always meant to feel like this."}
                                         </p>
                                     </>
                                 )}
                             </div>
                             <div className="flex flex-row justify-between border-t border-gray-300 p-3 text-sm items-center w-full bg-white relative">
-                                <div className={`max-w-[70%] transition-opacity duration-300 ${isMenuOpen ? "opacity-0 pointer-events-none absolute" : "opacity-100"}`}>
+                                <div
+                                    className={`max-w-[70%] transition-opacity duration-300 ${isMenuOpen ? "opacity-0 pointer-events-none absolute" : "opacity-100"}`}
+                                >
                                     <p>
-                                        {data?.coffeeDesc || "The building used to generate electricity. We think it still does."}
+                                        {data?.coffeeDesc ||
+                                            "The building used to generate electricity. We think it still does."}
                                     </p>
                                 </div>
                                 <button
                                     onClick={handleMenuToggle}
                                     className={`p-1 px-2 border-2 border-black text-base font-semibold hover:bg-black hover:text-white transition-colors duration-300 whitespace-nowrap shrink-0 z-10 ml-auto`}
                                 >
-                                    {isMenuOpen ? "Close" : data?.menuButtonText || "View Menu"}
+                                    {isMenuOpen
+                                        ? "Close"
+                                        : data?.menuButtonText || "View Menu"}
                                 </button>
                             </div>
                         </div>
@@ -304,10 +317,12 @@ export default function vntSpaces({ data }: any) {
                 </section>
 
                 {/* Concept Store Section */}
-                <section className="relative w-full h-[80vh] min-h-[500px]">
-                    <div 
+                <section className="relative w-full h-[100vh] min-h-[500px]">
+                    <div
                         className="absolute inset-0 bg-cover bg-center"
-                        style={{ backgroundImage: `url(${data?.conceptBgUrl || ConceptStoreBg.src})` }}
+                        style={{
+                            backgroundImage: `url(${data?.conceptBgUrl || ConceptStoreBg.src})`,
+                        }}
                     />
                     <div className="absolute inset-0 flex flex-col justify-end p-3 pb-3 pointer-events-none">
                         <div className="w-full bg-white text-black font-sans rounded-none min-h-[25vh] pointer-events-auto flex flex-col justify-between">
@@ -316,13 +331,15 @@ export default function vntSpaces({ data }: any) {
                                     {data?.conceptLabel || "Events_space"}
                                 </p>
                                 <p className="text-xl sm:text-2xl font-medium leading-tight mt-2 min-h-[60px]">
-                                    {data?.conceptTitle || "Every visit, a different world. Design, fashion, and art, thoughtfully arranged, always evolving."}
+                                    {data?.conceptTitle ||
+                                        "Every visit, a different world. Design, fashion, and art, thoughtfully arranged, always evolving."}
                                 </p>
                             </div>
                             <div className="flex flex-row items-center justify-between border-t border-gray-300 px-3 py-3 text-sm w-full">
                                 <div className="max-w-[100%]">
                                     <p>
-                                        {data?.conceptDesc || "90m² of rotating design, fashion, and art."}
+                                        {data?.conceptDesc ||
+                                            "90m² of rotating design, fashion, and art."}
                                     </p>
                                 </div>
                             </div>

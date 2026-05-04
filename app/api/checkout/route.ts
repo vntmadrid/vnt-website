@@ -3,9 +3,12 @@ import Stripe from "stripe";
 import { urlFor } from "@/sanity/lib/image";
 import { client } from "@/sanity/lib/client";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "sk_test_mock_value", {
-    apiVersion: "2026-04-22.dahlia" as any,
-});
+const stripe = new Stripe(
+    process.env.STRIPE_SECRET_KEY || "sk_test_mock_value",
+    {
+        apiVersion: "2026-04-22.dahlia" as any,
+    },
+);
 
 type DeliveryMethod = "shipping" | "pickup";
 
@@ -133,8 +136,55 @@ export async function POST(req: Request) {
         let shippingAddressCollection: any | undefined;
 
         if (method === "shipping") {
+            // if need to restrict delivery location, include/remove the countries here
             shippingAddressCollection = {
-                allowed_countries: ["ES", "PT", "FR", "IT", "DE", "NL"], // Example
+                allowed_countries: [
+                    "AD",
+                    "AL",
+                    "AT",
+                    "BA",
+                    "BE",
+                    "BG",
+                    "CH",
+                    "CY",
+                    "CZ",
+                    "DE",
+                    "DK",
+                    "EE",
+                    "ES",
+                    "FI",
+                    "FR",
+                    "GB",
+                    "GI",
+                    "GR",
+                    "HR",
+                    "HU",
+                    "IE",
+                    "IS",
+                    "IT",
+                    "LI",
+                    "LT",
+                    "LU",
+                    "LV",
+                    "MC",
+                    "MD",
+                    "ME",
+                    "MK",
+                    "MT",
+                    "NL",
+                    "NO",
+                    "PL",
+                    "PT",
+                    "RO",
+                    "RS",
+                    "SE",
+                    "SI",
+                    "SK",
+                    "SM",
+                    "TR",
+                    "UA",
+                    "VA",
+                ],
             };
 
             // If you configure Shipping Rates in Stripe Dashboard,

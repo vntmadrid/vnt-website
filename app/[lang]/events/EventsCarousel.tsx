@@ -134,7 +134,7 @@ export default function EventsCarousel({ lang, events }: EventsCarouselProps) {
                             draggable={false}
                         >
                             <div 
-                                className="relative aspect-[4/5] w-full overflow-hidden pointer-events-none"
+                                className="relative aspect-[4/5] max-h-[70vh] w-full overflow-hidden pointer-events-none"
                                 style={{
                                     viewTransitionName: `event-image-${event.slug.replace(/[^a-zA-Z0-9]/g, "-")}`,
                                 }}

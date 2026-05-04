@@ -181,7 +181,7 @@ function EventsSectionInner({
                                 href={`/${lang}/events/${event.slug}`}
                                 onClick={handleLinkClick}
                                 draggable={false} // Prevents native ghost image drag
-                                className="block h-115 w-75 bg-white text-black lg:h-155 lg:w-117.5 overflow-hidden pointer-events-auto"
+                                className="block h-115 w-75 bg-white text-black xl:h-155 xl:w-117.5 overflow-hidden pointer-events-auto"
                             >
                                 <div className="flex h-full flex-col items-center pointer-events-none">
                                     <div className="w-full min-w-0 p-3 lg:p-5 bg-white">

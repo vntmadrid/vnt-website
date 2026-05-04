@@ -61,7 +61,7 @@ export default function SiteFooterSection({
                         />
                     )}
                     <p className="text-zinc-500 text-sm hidden sm:block">
-                        Website by{" "}
+                        {lang === "es" ? "Sitio por" : "Website by"}{" "}
                         <a
                             href="http://www.nichita.dev"
                             target="_blank"
@@ -93,7 +93,7 @@ export default function SiteFooterSection({
                         <p className="text-gray-400">{emailText}</p>
                     </a>
                     <p className="text-zinc-500 text-sm block sm:hidden mt-6">
-                        Website by{" "}
+                        {lang === "es" ? "Sitio por" : "Website by"}{" "}
                         <a
                             href="http://www.nichita.dev"
                             target="_blank"

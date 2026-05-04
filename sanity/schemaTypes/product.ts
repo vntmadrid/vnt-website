@@ -61,17 +61,18 @@ export const product = defineType({
   ],
   preview: {
     select: {
-      title: 'title.en',
-      media: 'images.0',
+      titleEn: 'title.en',
+      titleEs: 'title.es',
+      images: 'images',
       price: 'price',
       stock: 'stock',
     },
     prepare(selection) {
-      const { title, media, price, stock } = selection
+      const { titleEn, titleEs, images, price, stock } = selection
       return {
-        title: title || 'Untitled Product',
+        title: titleEn || titleEs || 'Untitled Product',
         subtitle: `€${price} (${stock} in stock)`,
-        media,
+        media: images && images[0],
       }
     }
   }

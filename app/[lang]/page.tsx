@@ -8,6 +8,22 @@ import VntSpaces from "../components/home/vntSpaces";
 import HomeStickyHeader from "../components/home/HomeStickyHeader";
 import ComingSoonPage from "../components/ComingSoonPage";
 import { client } from "@/sanity/lib/client";
+import { Metadata } from "next";
+
+export async function generateMetadata(props: {
+    params: Promise<{ lang: "en" | "es" }>;
+}): Promise<Metadata> {
+    const params = await props.params;
+    const lang = params.lang;
+    const isEs = lang === "es";
+
+    return {
+        title: isEs ? "VNT Madrid | Inicio" : "VNT Madrid | Home",
+        description: isEs 
+            ? "Explora VNT Madrid: Café de especialidad, Concept Store y espacio de eventos." 
+            : "Explore VNT Madrid: Specialty Coffee, Concept Store, and Event Space.",
+    };
+}
 
 export default async function Home(props: {
     params: Promise<{ lang: "en" | "es" }>;
@@ -21,8 +37,12 @@ export default async function Home(props: {
           "leftBody": leftBody[$lang],
           "rightTitle": rightTitle[$lang],
           "rightBody": rightBody[$lang],
+          "mobileTitle": mobileTitle[$lang],
           "featuredImageUrl": featuredImage.asset->url,
           "backgroundImageUrl": backgroundImage.asset->url
+      },
+      "footer": *[_type == "siteFooter"][0]{
+          "locationText": locationText[$lang]
       },
       "vntSpaces": *[_type == "vntSpaces"][0]{
           "coffeeBgUrl": coffeeBg.asset->url,
@@ -86,6 +106,8 @@ export default async function Home(props: {
                 leftBody={data.intro?.leftBody}
                 rightTitle={data.intro?.rightTitle}
                 rightBody={data.intro?.rightBody}
+                mobileTitle={data.intro?.mobileTitle}
+                address={data.footer?.locationText}
                 featuredImage={data.intro?.featuredImageUrl}
                 backgroundImage={data.intro?.backgroundImageUrl}
             />
