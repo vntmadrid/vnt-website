@@ -156,9 +156,6 @@ export async function POST(req: Request) {
         await transaction.commit();
         console.log("Sanity transaction committed successfully for session:", session.id);
 
-        // --- ENHANCEMENT: Send Staff Notification ---
-        // (Notifications removed to fix build error)
-        // --------------------------------------------
 
         return NextResponse.json({ received: true }, { status: 200 });
     } catch (error: unknown) {

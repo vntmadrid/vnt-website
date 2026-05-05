@@ -33,6 +33,14 @@ export const product = defineType({
       validation: (Rule) => Rule.required().min(0),
     }),
     defineField({
+      name: 'shippingCost',
+      title: 'Shipping Cost (€)',
+      type: 'number',
+      initialValue: 0,
+      validation: (Rule) => Rule.min(0),
+      description: 'Custom shipping fee for this item. Will be multiplied by quantity at checkout.',
+    }),
+    defineField({
       name: 'stock',
       title: 'Stock Quantity',
       type: 'number',

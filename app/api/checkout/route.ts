@@ -21,6 +21,7 @@ type CheckoutCartItem = {
 type SanityProduct = {
     _id: string;
     price: number;
+    shippingCost?: number;
     stock: number;
     stripePriceId?: string;
     title?: Record<string, string>;
@@ -56,6 +57,7 @@ export async function POST(req: Request) {
             `*[_type == "product" && _id in $itemIds] {
         _id,
         price,
+        shippingCost,
         stock,
         stripePriceId,
         title,
@@ -102,8 +104,14 @@ export async function POST(req: Request) {
                 ? `https://${process.env.VERCEL_URL}`
                 : "http://localhost:3000");
 
+        let totalShippingCost = 0;
+
         const lineItems: any[] = items.map((item) => {
             const product = productById.get(item.id)!;
+
+            // Add to total shipping
+            const itemShipping = product.shippingCost || 0;
+            totalShippingCost += itemShipping * item.quantity;
 
             // If we have a Pre-created Stripe Price ID in Sanity schema
             if (product.stripePriceId) {
@@ -187,13 +195,18 @@ export async function POST(req: Request) {
                 ],
             };
 
-            // If you configure Shipping Rates in Stripe Dashboard,
-            // pass them via environment variables e.g. STRIPE_SHIPPING_RATE_ID
-            if (process.env.STRIPE_SHIPPING_RATE_ID) {
-                shippingOptions = [
-                    { shipping_rate: process.env.STRIPE_SHIPPING_RATE_ID },
-                ];
-            }
+            shippingOptions = [
+                {
+                    shipping_rate_data: {
+                        type: "fixed_amount",
+                        fixed_amount: {
+                            amount: Math.round(totalShippingCost * 100),
+                            currency: "eur",
+                        },
+                        display_name: "Standard Shipping",
+                    },
+                },
+            ];
         }
 
         // Keep metadata compact: p contains "productId:qty,productId:qty"
