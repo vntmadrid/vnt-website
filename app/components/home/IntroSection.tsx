@@ -216,6 +216,7 @@ export default function IntroSection({
                             src={featuredImage || VntConcrete}
                             alt="Initial artwork"
                             fill
+                            sizes="100vw"
                             className="object-cover"
                             priority
                         />

@@ -87,7 +87,10 @@ export default function ProductGrid({ products, lang }: ProductGridProps) {
                 {items.map((product, index) => {
                     const title = product.title[lang] || product.title.en;
                     const isSoldOut = product.stock <= 0;
-                    console.log("products in shop grid:", product)
+                    const mainImage = product.images?.[0];
+                    const mainImageUrl = mainImage
+                        ? urlFor(mainImage).width(600).height(800).url()
+                        : null;
 
                     return (
                         <motion.div
@@ -106,14 +109,12 @@ export default function ProductGrid({ products, lang }: ProductGridProps) {
                                 <div
                                     className={`relative aspect-[3/4] w-full rounded-sm overflow-hidden bg-white/5 border border-white/10 transition-colors group-hover:border-white/30 ${isSoldOut ? "grayscale opacity-75" : ""}`}
                                 >
-                                    {product.images && product.images[0] && (
+                                    {mainImageUrl && (
                                         <Image
-                                            src={urlFor(product.images[0])
-                                                .width(600)
-                                                .height(800)
-                                                .url()}
+                                            src={mainImageUrl}
                                             alt={title}
                                             fill
+                                            sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
                                             className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                                         />
                                     )}
@@ -150,7 +151,7 @@ export default function ProductGrid({ products, lang }: ProductGridProps) {
     return (
         <div className="flex flex-col w-full">
             {/* Controls Bar */}
-            <div className="flex flex-col md:flex-row gap-4 justify-between items-center p-6 border-b border-white/20 mb-2 mt-4 bg-white/[0.02]">
+            <div className="flex flex-col md:flex-row gap-4 justify-between items-center p-6 border-b border-white/20 mb-2 mt-4">
                 {/* Search */}
                 <div className="relative w-full md:w-64">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />

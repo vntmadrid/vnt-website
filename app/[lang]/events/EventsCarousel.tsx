@@ -134,7 +134,7 @@ export default function EventsCarousel({ lang, events }: EventsCarouselProps) {
                             draggable={false}
                         >
                             <div 
-                                className="relative aspect-[4/5] max-h-[70vh] w-full overflow-hidden pointer-events-none"
+                                className="relative aspect-[4/5] max-h-[55vh] w-full overflow-hidden pointer-events-none"
                                 style={{
                                     viewTransitionName: `event-image-${event.slug.replace(/[^a-zA-Z0-9]/g, "-")}`,
                                 }}
@@ -146,6 +146,7 @@ export default function EventsCarousel({ lang, events }: EventsCarouselProps) {
                                         event.coverImageUrl || imagePlaceholder
                                     }
                                     alt={event.title}
+                                    sizes="(min-width: 1280px) 400px, (min-width: 1024px) 340px, (min-width: 640px) 390px, 70vw"
                                     draggable={false}
                                 />
                             </div>

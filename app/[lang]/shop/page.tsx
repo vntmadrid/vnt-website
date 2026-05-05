@@ -18,6 +18,7 @@ export async function generateMetadata(props: {
 
 import ShopHeader from "@/components/shop/ShopHeader";
 import ProductGrid from "@/components/shop/ProductGrid";
+import CartDrawer from "@/components/shop/CartDrawer";
 import { SanityLive } from "@/sanity/lib/live";
 
 // GROQ query to fetch all products and find the event that references them

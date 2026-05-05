@@ -90,19 +90,22 @@ export default function ProductDetailClient({
         openCart(); // Show cart after adding
     };
 
+    const currentImage = images[currentImageIndex];
+    const currentImageUrl = currentImage
+        ? urlFor(currentImage).width(1200).height(1500).url()
+        : null;
+
     return (
         <div className="flex flex-col justify-center lg:flex-row gap-8 lg:gap-12 w-full p-6 pb-24">
             {/* Left Column: Big Image & Carousel styling */}
             <div className="w-full lg:w-[40%] flex flex-col items-center">
                 <div className="relative w-full aspect-[4/5] bg-white/5 overflow-hidden  group">
-                    {images.length > 0 && images[currentImageIndex] && (
+                    {currentImageUrl && (
                         <Image
-                            src={urlFor(images[currentImageIndex])
-                                .width(1200)
-                                .height(1500)
-                                .url()}
+                            src={currentImageUrl}
                             alt={title}
                             fill
+                            sizes="(min-width: 1024px) 40vw, 90vw"
                             className="object-cover transition-opacity duration-300"
                             priority
                         />

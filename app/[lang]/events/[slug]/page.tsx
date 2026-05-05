@@ -165,6 +165,7 @@ export default async function EventPage(props: EventPageProps) {
                         priority
                         width={1920}
                         height={1080}
+                        sizes="100vw"
                     />
 
                     <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-black/90 to-transparent z-0" />
@@ -199,6 +200,7 @@ export default async function EventPage(props: EventPageProps) {
                                         width={1200}
                                         height={800}
                                         priority
+                                        sizes="(min-width: 1024px) 60vw, 100vw"
                                     />
                                     <Image
                                         src={galleryPhotos[1]}
@@ -207,6 +209,7 @@ export default async function EventPage(props: EventPageProps) {
                                         width={450}
                                         height={800}
                                         priority
+                                        sizes="(min-width: 1280px) 30vw, (min-width: 1024px) 40vw, 40vw"
                                     />
                                 </div>
                             ) : (
@@ -217,6 +220,7 @@ export default async function EventPage(props: EventPageProps) {
                                     width={1200}
                                     height={800}
                                     priority
+                                    sizes="(min-width: 1024px) 80vw, 100vw"
                                 />
                             )}
 
@@ -229,6 +233,7 @@ export default async function EventPage(props: EventPageProps) {
                                         width={600}
                                         height={400}
                                         priority
+                                        sizes="(min-width: 1024px) 50vw, 100vw"
                                     />
                                     <Image
                                         src={galleryPhotos[2]}
@@ -237,6 +242,7 @@ export default async function EventPage(props: EventPageProps) {
                                         width={400}
                                         height={400}
                                         priority
+                                        sizes="(min-width: 1024px) 50vw, 100vw"
                                     />
                                 </div>
                             )}

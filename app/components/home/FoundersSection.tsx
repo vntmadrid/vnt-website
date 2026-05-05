@@ -50,6 +50,7 @@ export default function FoundersSection({ data }: { data?: FoundersSectionData }
                         width={1200}
                         height={900}
                         quality={100}
+                        sizes="100vw"
                         className="h-65 w-full object-cover md:hidden"
                     />
                     <div className="flex flex-col gap-4 p-4 md:p-0">
@@ -77,6 +78,7 @@ export default function FoundersSection({ data }: { data?: FoundersSectionData }
                     width={855}
                     height={1389}
                     quality={100}
+                    sizes="285px"
                     className="hidden md:block md:w-[285px] h-auto object-cover"
                 />
             </div>

@@ -110,15 +110,21 @@ export default function CartDrawer({ lang }: { lang: string }) {
                   </button>
                 </div>
               ) : (
-                items.map((item) => (
+                items.map((item) => {
+                  const imageUrl = item.image
+                    ? urlFor(item.image).width(160).height(200).url()
+                    : null;
+
+                  return (
                   <div key={item.id} className="flex gap-4">
                     {/* Image */}
                     <div className="relative w-20 h-24 bg-white/5 rounded overflow-hidden shrink-0">
-                      {item.image && (
+                      {imageUrl && (
                         <Image
-                          src={urlFor(item.image).width(160).height(200).url()}
+                          src={imageUrl}
                           alt={item.title[lang] || item.title.en}
                           fill
+                          sizes="80px"
                           className="object-cover"
                         />
                       )}
@@ -166,7 +172,7 @@ export default function CartDrawer({ lang }: { lang: string }) {
                       </div>
                     </div>
                   </div>
-                ))
+                )})
               )}
             </div>
 
