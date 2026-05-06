@@ -85,7 +85,7 @@ export default function IntroSection({
             <motion.div
                 className="absolute inset-0 bg-cover bg-center bg-no-repeat"
                 style={{
-                    backgroundImage: `url(${BgConcrete.src || backgroundImage})`,
+                    backgroundImage: `url(${backgroundImage || BgConcrete.src})`,
                 }}
                 initial={{ scale: 1, opacity: 0 }}
                 animate={{ scale: 1.05, opacity: 1 }}

@@ -165,16 +165,16 @@ export default function MenuContent({ menuData }: any) {
             <div className="space-y-10">
                 {rawMenuData.sections.map((section: any, idx: number) => (
                     <motion.div variants={itemVariants} key={idx} className="space-y-4">
-                        <h3 className="text-xl font-medium tracking-wide">
+                        <h3 className="text-2xl font-medium tracking-wide">
                             {section.sectionName}
                         </h3>
-                        <div className="space-y-4">
+                        <div className="space-y-3">
                             {section.items?.map((item: any, itemIdx: number) => (
                                 <div key={itemIdx} className="flex justify-between items-start gap-4">
                                     <div className="flex-1">
-                                        <p className="font-medium text-base">{item.name}</p>
+                                        <p className="font-medium text-base capitalize">{item.name}</p>
                                         {('description' in item) && item.description && (
-                                            <p className="text-sm text-gray-600 mt-0.5 leading-relaxed">
+                                            <p className="text-sm text-gray-600 mt-0.5 leading-relaxed capitalize">
                                                 {item.description}
                                             </p>
                                         )}
