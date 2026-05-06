@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { sanityFetch } from "@/sanity/lib/live";
+import { Suspense } from "react";
 
 export async function generateMetadata(props: {
     params: Promise<{ lang: string }>;
@@ -10,8 +11,8 @@ export async function generateMetadata(props: {
 
     return {
         title: isEs ? "Tienda | VNT Madrid" : "Shop | VNT Madrid",
-        description: isEs 
-            ? "Compra nuestra selección de productos exclusivos en VNT Madrid." 
+        description: isEs
+            ? "Compra nuestra selección de productos exclusivos en VNT Madrid."
             : "Shop our curated selection of exclusive products at VNT Madrid.",
     };
 }
@@ -19,6 +20,7 @@ export async function generateMetadata(props: {
 import ShopHeader from "@/components/shop/ShopHeader";
 import ProductGrid, { type Product } from "@/components/shop/ProductGrid";
 import CartDrawer from "@/components/shop/CartDrawer";
+import ShopToastHandler from "@/components/shop/ShopToastHandler";
 import { SanityLive } from "@/sanity/lib/live";
 
 // GROQ query to fetch all products and find the event that references them
@@ -47,15 +49,20 @@ export default async function ShopPage({
     const resolvedParams = await params;
     const { lang } = resolvedParams;
 
-    const { data: products } = await sanityFetch({ query: PRODUCTS_QUERY }) as { data: Product[] };
+    const { data: products } = (await sanityFetch({
+        query: PRODUCTS_QUERY,
+    })) as { data: Product[] };
 
     return (
         <div className="bg-black min-h-screen text-white flex flex-col font-sans">
             <CartDrawer lang={lang} />
+            <Suspense>
+                <ShopToastHandler lang={lang} />
+            </Suspense>
             <ShopHeader lang={lang} />
 
             <main className="flex-1 w-full max-w-screen-2xl mx-auto xl:px-8">
-                <ProductGrid products={products as Product[]} lang={lang}/>
+                <ProductGrid products={products as Product[]} lang={lang} />
             </main>
             <SanityLive />
         </div>

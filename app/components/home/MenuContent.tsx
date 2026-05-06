@@ -189,7 +189,7 @@ export default function MenuContent({ menuData }: any) {
                 ))}
             </div>
 
-            <motion.div variants={itemVariants} className="mt-12 pt-6 border-t border-black">
+            <motion.div variants={itemVariants} className="mt-12 pt-6 border-t border-black md:mb-24">
                 <p className="text-xs text-gray-500 uppercase tracking-widest text-center">
                     {rawMenuData.footer}
                 </p>

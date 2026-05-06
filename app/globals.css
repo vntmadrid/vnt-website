@@ -160,6 +160,10 @@ body {
   animation: fadeInGradient 0.3s ease-out 0.05s both;
 }
 
+[data-sonner-toaster] {
+  z-index: 2147483647 !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   ::before,

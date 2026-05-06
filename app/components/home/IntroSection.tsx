@@ -162,6 +162,7 @@ export default function IntroSection({
                         height={420}
                         className="w-full aspect-square object-cover"
                         priority
+                        loading="eager"
                     />
                 </div>
 
@@ -209,7 +210,11 @@ export default function IntroSection({
                     <motion.div
                         initial={{ scale: 1.15 }}
                         animate={{ scale: 1 }}
-                        transition={{ duration: 1.2, delay: 0.2, ease: [0.76, 0, 0.24, 1], }}
+                        transition={{
+                            duration: 1.2,
+                            delay: 0.2,
+                            ease: [0.76, 0, 0.24, 1],
+                        }}
                         className="w-full h-full"
                     >
                         <Image
@@ -219,6 +224,7 @@ export default function IntroSection({
                             sizes="100vw"
                             className="object-cover"
                             priority
+                            loading="eager"
                         />
                     </motion.div>
                 </div>
@@ -228,13 +234,22 @@ export default function IntroSection({
                     className="bg-white overflow-hidden"
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: "auto", opacity: 1 }}
-                    transition={{ duration: 1.2, delay: 0.2, ease: [0.76, 0, 0.24, 1] }}
+                    transition={{
+                        duration: 1.2,
+                        delay: 0.2,
+                        ease: [0.76, 0, 0.24, 1],
+                    }}
                 >
                     <div className="p-4">
-                        <p className="mb-3">{mobileTitle || "Built in a former electricity house."}</p>
+                        <p className="mb-3">
+                            {mobileTitle ||
+                                "Built in a former electricity house."}
+                        </p>
                         <div className="flex flex-row justify-between border-t border-gray-300 pt-3 text-sm">
                             <div className="whitespace-pre-line">
-                                <p>{address || "C. Noviciado 4, 28015 Madrid"}</p>
+                                <p>
+                                    {address || "C. Noviciado 4, 28015 Madrid"}
+                                </p>
                             </div>
                             <button onClick={scrollToNext}> Explore ↓</button>
                         </div>

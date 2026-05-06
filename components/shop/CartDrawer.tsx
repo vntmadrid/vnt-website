@@ -53,8 +53,17 @@ export default function CartDrawer({ lang }: { lang: string }) {
     }, []);
 
     useEffect(() => {
-        if (mounted && searchParams.get("success") === "true") {
+        if (!mounted) return;
+
+        const successParam = searchParams.get("success") === "true";
+
+        // Only clear cart on successful payment, not on cancellation
+        if (successParam) {
             clearCart();
+            closeCart();
+            // Clear the localStorage flag
+            localStorage.removeItem("checkout_session_id");
+            
             // Remove the success param from URL without refreshing
             const params = new URLSearchParams(searchParams.toString());
             params.delete("success");
@@ -63,7 +72,7 @@ export default function CartDrawer({ lang }: { lang: string }) {
                 : window.location.pathname;
             router.replace(newUrl, { scroll: false });
         }
-    }, [mounted, searchParams, clearCart, router]);
+    }, [mounted, searchParams, clearCart, closeCart, router]);
 
     if (!mounted) return null;
 
@@ -80,6 +89,8 @@ export default function CartDrawer({ lang }: { lang: string }) {
             if (!res.ok) throw new Error(data.message || "Checkout failed");
 
             if (data.url) {
+                // Set a flag in localStorage to track checkout completion
+                localStorage.setItem("checkout_session_id", data.sessionId || "pending");
                 window.location.href = data.url;
             } else {
                 throw new Error("No checkout URL returned from Stripe");
