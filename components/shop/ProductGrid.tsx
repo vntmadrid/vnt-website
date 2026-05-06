@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState, useMemo } from "react";
 import { Search } from "lucide-react";
 
-interface Product {
+export interface Product {
     _id: string;
     title: Record<string, string>;
     slug: { current: string };

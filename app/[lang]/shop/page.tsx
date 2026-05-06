@@ -17,7 +17,7 @@ export async function generateMetadata(props: {
 }
 
 import ShopHeader from "@/components/shop/ShopHeader";
-import ProductGrid from "@/components/shop/ProductGrid";
+import ProductGrid, { type Product } from "@/components/shop/ProductGrid";
 import CartDrawer from "@/components/shop/CartDrawer";
 import { SanityLive } from "@/sanity/lib/live";
 
@@ -47,7 +47,7 @@ export default async function ShopPage({
     const resolvedParams = await params;
     const { lang } = resolvedParams;
 
-    const { data: products } = await sanityFetch({ query: PRODUCTS_QUERY });
+    const { data: products } = await sanityFetch({ query: PRODUCTS_QUERY }) as { data: Product[] };
 
     return (
         <div className="bg-black min-h-screen text-white flex flex-col font-sans">
@@ -55,7 +55,7 @@ export default async function ShopPage({
             <ShopHeader lang={lang} />
 
             <main className="flex-1 w-full max-w-screen-2xl mx-auto xl:px-8">
-                <ProductGrid products={products} lang={lang} />
+                <ProductGrid products={products as Product[]} lang={lang}/>
             </main>
             <SanityLive />
         </div>
