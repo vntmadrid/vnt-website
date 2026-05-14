@@ -168,7 +168,7 @@ export default async function EventPage(props: EventPageProps) {
                         sizes="100vw"
                     />
 
-                    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-black/90 to-transparent z-0" />
+                    <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-black/100 to-transparent z-0" />
                 </div>
 
                 <div
@@ -294,12 +294,11 @@ export default async function EventPage(props: EventPageProps) {
                             description={event.duration?.range}
                         />
                     )}
-
                     <EventInfoBlock
                         label={t.collaborateLabel}
                         title={t.collaborateTitle}
                         linkText={t.collaborateCta}
-                        linkHref="https://www.instagram.com/vnt_madrid/"
+                        linkHref="/events"
                     />
                 </div>
             </div>

@@ -1,8 +1,11 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { writeClient, client } from "@/sanity/lib/client";
+import { Shippo } from "shippo";
 
 export const runtime = "nodejs";
+
+const shippoClient = new Shippo({ apiKeyHeader: process.env.SHIPPO_API_KEY as string });
 
 type PurchasedItem = {
     id: string;
@@ -106,12 +109,53 @@ export async function POST(req: Request) {
         // 2. Create Order Document
         const orderNumber = `ORD-${Date.now()}`;
         const deliveryMethodFromMetadata = session.metadata?.dm || "unknown";
+        const shippoRateId = session.metadata?.sr || undefined;
+
+        let shippoLabelUrl = "";
+        let shippoTrackingNumber = "";
+        let shippoTransactionId = "";
+
+        // 3. Purchase Shippo Label
+        if (shippoRateId && shippoRateId.length > 10) {
+            try {
+                console.log(`Purchasing Shippo label for rate: ${shippoRateId}`);
+                const transactionResult = await shippoClient.transactions.create({
+                    rate: shippoRateId,
+                    async: false
+                });
+                
+                console.log(`\n\n--- RAW SHIPPO TRANSACTION RESULT LIMIT ---`);
+                console.log(JSON.stringify(transactionResult, null, 2));
+                console.log(`--- END SHIPPO RESULT ---\n\n`);
+
+                shippoTransactionId = transactionResult.objectId || "";
+
+                if (transactionResult.status === "SUCCESS") {
+                    shippoLabelUrl = transactionResult.labelUrl || "";
+                    shippoTrackingNumber = transactionResult.trackingNumber || "";
+                    console.log(`Shippo Purchase Success! Tracking: ${shippoTrackingNumber}`);
+                } else {
+                    console.warn(`Shippo Purchase Failed / Pending:`, transactionResult.messages);
+                }
+            } catch (err) {
+                console.error("Error creating Shippo transaction:", err);
+            }
+        }
 
         console.log(`Creating order document: ${orderNumber}`);
+
+        const paymentIntentId = session.payment_intent as string | undefined;
+        let stripeDashboardUrl = "";
+        if (paymentIntentId) {
+            stripeDashboardUrl = `https://dashboard.stripe.com/${session.livemode ? "" : "test/"}payments/${paymentIntentId}`;
+        }
+
         transaction.create({
             _type: "order",
             orderNumber,
             stripeSessionId: session.id,
+            stripePaymentId: paymentIntentId,
+            stripeDashboardUrl: stripeDashboardUrl || undefined,
             status: "pending",
             customer: {
                 name: session.customer_details?.name || "Unknown",
@@ -129,27 +173,15 @@ export async function POST(req: Request) {
             totalAmount: session.amount_total || 0,
             currency: session.currency || "eur",
             deliveryMethod: deliveryMethodFromMetadata,
-            shippingAddress:
-                session.shipping_details?.address ||
-                session.customer_details?.address
-                    ? {
-                          line1:
-                              session.shipping_details?.address?.line1 ||
-                              session.customer_details?.address?.line1,
-                          line2:
-                              session.shipping_details?.address?.line2 ||
-                              session.customer_details?.address?.line2,
-                          city:
-                              session.shipping_details?.address?.city ||
-                              session.customer_details?.address?.city,
-                          postal_code:
-                              session.shipping_details?.address?.postal_code ||
-                              session.customer_details?.address?.postal_code,
-                          country:
-                              session.shipping_details?.address?.country ||
-                              session.customer_details?.address?.country,
-                      }
-                    : undefined,
+            shippoTransactionId: shippoTransactionId || undefined,
+            shippoLabelUrl: shippoLabelUrl || undefined,
+            shippoTrackingNumber: shippoTrackingNumber || undefined,
+            shippingAddress: {
+                line1: session.metadata?.a_l1 || "",
+                city: session.metadata?.a_city || "",
+                postal_code: session.metadata?.a_pos || "",
+                country: session.metadata?.a_c || "ES",
+            },
             createdAt: new Date().toISOString(),
         });
 

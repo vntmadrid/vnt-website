@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import { loadStripe } from "@stripe/stripe-js";
+import { useShippingRates } from "@/lib/hooks/useShippingRates";
 
 // Initialize Stripe outside component
 const stripePromise = loadStripe(
@@ -26,9 +27,27 @@ export default function CartDrawer({ lang }: { lang: string }) {
     } = useCartStore();
     const [mounted, setMounted] = useState(false);
     const [isCheckingOut, setIsCheckingOut] = useState(false);
-    const [deliveryMethod, setDeliveryMethod] = useState<"shipping" | "pickup">(
-        "shipping",
-    );
+    const [deliveryMethod, setDeliveryMethod] = useState<"shipping" | "pickup">("shipping");
+
+    const [checkoutStep, setCheckoutStep] = useState<"cart" | "address">("cart");
+    const {
+        address,
+        setAddress,
+        shippingRates,
+        selectedRate,
+        setSelectedRate,
+        isFetchingRates,
+        fetchError,
+        fetchRates,
+        resetRates
+    } = useShippingRates();
+
+    // Reset shipping options and go back to cart view if the cart contents change
+    const cartContentsKey = JSON.stringify(items.map(i => ({ id: i.id, q: i.quantity })));
+    useEffect(() => {
+        setCheckoutStep("cart");
+        resetRates();
+    }, [cartContentsKey]); // Intentionally leaving out resetRates from deps to avoid infinite loops if hook re-renders
 
     const t = {
         title: lang === "es" ? "Tu Carrito" : "Your Cart",
@@ -76,13 +95,33 @@ export default function CartDrawer({ lang }: { lang: string }) {
 
     if (!mounted) return null;
 
+    const handleCheckoutInit = () => {
+        if (deliveryMethod === "pickup") {
+            handleCheckout();
+        } else {
+            setCheckoutStep("address");
+        }
+    };
+
+    const handleFetchRates = async (e: React.FormEvent) => {
+        e.preventDefault();
+        await fetchRates(items);
+    };
+
     const handleCheckout = async () => {
         try {
             setIsCheckingOut(true);
             const res = await fetch("/api/checkout", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ items, lang, deliveryMethod }),
+                body: JSON.stringify({ 
+                    items, 
+                    lang, 
+                    deliveryMethod,
+                    shippoRate: selectedRate,
+                    customerEmail: address.email,
+                    address
+                }),
             });
             const data = await res.json();
 
@@ -131,19 +170,24 @@ export default function CartDrawer({ lang }: { lang: string }) {
                         {/* Header */}
                         <div className="p-6 border-b border-white/10 flex justify-between items-center">
                             <h2 className="text-xl tracking-tighter uppercase font-light">
-                                {t.title}
+                                {checkoutStep === "cart" ? t.title : (lang === "es" ? "DIRECCIÓN DE ENVÍO" : "SHIPPING ADDRESS")}
                             </h2>
                             <button
-                                onClick={closeCart}
+                                onClick={() => {
+                                    if (checkoutStep === "address") setCheckoutStep("cart");
+                                    else closeCart();
+                                }}
                                 className="p-2 hover:bg-white/10 rounded-full transition-colors"
-                                aria-label="Close Cart"
+                                aria-label={checkoutStep === "address" ? "Back to Cart" : "Close Cart"}
                             >
                                 <X size={20} />
                             </button>
                         </div>
 
-                        {/* Items List */}
-                        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+                        {checkoutStep === "cart" ? (
+                            <>
+                                {/* Items List */}
+                                <div className="flex-1 overflow-y-auto p-6 space-y-6">
                             {items.length === 0 ? (
                                 <div className="h-full flex flex-col items-center justify-center text-white/50 space-y-4">
                                     <ShoppingBag size={48} strokeWidth={1} />
@@ -304,7 +348,7 @@ export default function CartDrawer({ lang }: { lang: string }) {
                                     <span>€{getTotal().toFixed(2)}</span>
                                 </div>
                                 <button
-                                    onClick={handleCheckout}
+                                    onClick={handleCheckoutInit}
                                     disabled={isCheckingOut}
                                     className="w-full py-4 bg-white text-black rounded-full font-medium tracking-tighter uppercase hover:bg-white/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                                 >
@@ -323,6 +367,114 @@ export default function CartDrawer({ lang }: { lang: string }) {
                                 <p className="text-center text-white/40 text-xs mt-4">
                                     {t.footerNote}
                                 </p>
+                            </div>
+                        )}
+                            </>
+                        ) : (
+                            <div className="flex-1 overflow-y-auto p-6 flex flex-col">
+                                <form onSubmit={handleFetchRates} className="space-y-4">
+                                    <div className="space-y-2">
+                                        <input required placeholder="Full Name" value={address.name} onChange={e => setAddress({...address, name: e.target.value})} className="w-full bg-white/5 border border-white/20 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-white transition-colors" />
+                                        <input required type="email" placeholder="Email" value={address.email} onChange={e => setAddress({...address, email: e.target.value})} className="w-full bg-white/5 border border-white/20 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-white transition-colors" />
+                                        <input required type="tel" placeholder="Phone" value={address.phone} onChange={e => setAddress({...address, phone: e.target.value})} className="w-full bg-white/5 border border-white/20 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-white transition-colors" />
+                                        <input required placeholder="Street Address" value={address.street1} onChange={e => setAddress({...address, street1: e.target.value})} className="w-full bg-white/5 border border-white/20 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-white transition-colors" />
+                                        <div className="flex gap-2">
+                                            <input required placeholder="City" value={address.city} onChange={e => setAddress({...address, city: e.target.value})} className="flex-1 bg-white/5 border border-white/20 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-white transition-colors" />
+                                            <input placeholder="State (Optional)" value={address.state} onChange={e => setAddress({...address, state: e.target.value})} className="w-24 bg-white/5 border border-white/20 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-white transition-colors" />
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <input required placeholder="ZIP Code" value={address.zip} onChange={e => setAddress({...address, zip: e.target.value})} className="w-24 bg-white/5 border border-white/20 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-white transition-colors" />
+                                            <input required placeholder="Country (e.g. ES, US)" value={address.country} onChange={e => setAddress({...address, country: e.target.value})} className="flex-1 bg-white/5 border border-white/20 rounded-md px-3 py-2 text-sm focus:outline-none focus:border-white transition-colors" />
+                                        </div>
+                                    </div>
+                                    <button type="submit" disabled={isFetchingRates} className="w-full py-3 bg-white/10 text-white rounded-md text-sm font-medium tracking-tighter uppercase hover:bg-white/20 transition-colors disabled:opacity-50 flex justify-center items-center gap-2">
+                                        {isFetchingRates ? <><Loader2 size={16} className="animate-spin" /> {lang === 'es' ? 'Calculando...' : 'Calculating...'}</> : (lang === 'es' ? 'Calcular Envío' : 'Calculate Shipping')}
+                                    </button>
+                                </form>
+
+                                {fetchError === "no_rates" && shippingRates.length === 0 && (
+                                    <div className="mt-8 p-4 bg-white/5 border border-white/20 rounded-lg text-sm text-center">
+                                        <p className="text-white/80 mb-2">
+                                            {lang === 'es' 
+                                                ? 'No se pudieron calcular las tarifas de envío para esta dirección automáticamente. Por favor, contáctanos antes de comprar.'
+                                                : 'We could not automatically calculate shipping to this address. Please contact us before buying.'}
+                                        </p>
+                                        <a href="mailto:vnt.madrid@gmail.com" className="text-white underline hover:text-white/80 font-medium">vnt.madrid@gmail.com</a>
+                                    </div>
+                                )}
+
+                                {shippingRates.length > 0 && (
+                                    <div className="mt-8 space-y-6">
+                                        {Object.entries(
+                                            shippingRates.reduce((acc, rate) => {
+                                                const providerName = rate.provider;
+                                                if (!acc[providerName]) acc[providerName] = { 
+                                                    rates: [], 
+                                                    image: rate.providerImage75 
+                                                };
+                                                acc[providerName].rates.push(rate);
+                                                return acc;
+                                            }, {} as Record<string, { rates: any[], image: string }>)
+                                        ).map(([providerName, group]: [string, any]) => (
+                                            <div key={providerName} className="space-y-3">
+                                                <div className="flex items-center gap-3">
+                                                    {group.image && (
+                                                        <div className="bg-white rounded p-1 w-10 h-10 flex items-center justify-center shrink-0">
+                                                            {/* Empty string as fallback to trigger onError handler or just skip Next/Image to avoid domain whitelist issues */}
+                                                            <img 
+                                                                src={group.image} 
+                                                                alt={providerName} 
+                                                                className="max-w-full max-h-full object-contain" 
+                                                                onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                                                            />
+                                                        </div>
+                                                    )}
+                                                    <h4 className="font-semibold text-white/90 text-sm tracking-wide uppercase">
+                                                        {providerName}
+                                                    </h4>
+                                                </div>
+                                                <div className="space-y-2">
+                                                    {group.rates.map((rate: any) => (
+                                                        <label 
+                                                            key={rate.objectId} 
+                                                            onClick={() => setSelectedRate(rate)}
+                                                            className={`flex items-center justify-between p-4 border rounded-lg cursor-pointer transition-colors ${selectedRate?.objectId === rate.objectId ? 'border-white bg-white/5' : 'border-white/20 hover:border-white/40'}`}
+                                                        >
+                                                            <div className="flex items-center gap-4">
+                                                                <div className={`flex-shrink-0 w-4 h-4 rounded-full border flex flex-col items-center justify-center ${selectedRate?.objectId === rate.objectId ? 'border-white' : 'border-white/40'}`}>
+                                                                    {selectedRate?.objectId === rate.objectId && <div className="w-2 h-2 bg-white rounded-full" />}
+                                                                </div>
+                                                                <div className="flex flex-col">
+                                                                    <span className="text-sm font-medium">{rate.servicelevelName || rate.title.replace(`${providerName} - `, '')}</span>
+                                                                    {rate.estimatedDays && (
+                                                                        <span className="text-xs text-white/50">
+                                                                            {rate.estimatedDays} {lang === 'es' ? 'días estim. / est. days' : 'est. days'}
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                            <span className="text-sm font-bold">€{rate.amount}</span>
+                                                        </label>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                                
+                                <div className="mt-auto pt-6">
+                                    <div className="flex justify-between items-center mb-6 text-lg tracking-tighter">
+                                        <span className="text-white/60">{lang === 'es' ? 'TOTAL' : 'TOTAL'}</span>
+                                        <span>€{(getTotal() + (selectedRate ? parseFloat(selectedRate.amount) : 0)).toFixed(2)}</span>
+                                    </div>
+                                    <button 
+                                        onClick={handleCheckout} 
+                                        disabled={isCheckingOut || (!selectedRate)} 
+                                        className="w-full py-4 bg-white text-black rounded-full font-medium tracking-tighter uppercase hover:bg-white/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                                    >
+                                        {isCheckingOut ? <><Loader2 size={18} className="animate-spin" /> {t.processing}</> : (lang === 'es' ? 'Ir al Pago' : 'Proceed to Payment')}
+                                    </button>
+                                </div>
                             </div>
                         )}
                     </motion.div>

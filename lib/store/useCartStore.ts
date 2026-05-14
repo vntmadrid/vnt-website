@@ -9,6 +9,10 @@ export interface CartItem {
   stock: number;
   image: any; // First image
   stripePriceId?: string;
+  weight?: number;
+  length?: number;
+  width?: number;
+  height?: number;
   quantity: number;
 }
 

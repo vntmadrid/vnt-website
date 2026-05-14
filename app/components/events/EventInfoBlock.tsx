@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 type EventInfoBlockProps = {
     label: string;
@@ -15,6 +18,16 @@ export default function EventInfoBlock({
     linkText,
     linkHref,
 }: EventInfoBlockProps) {
+    const router = useRouter()
+    const handleCtaClick = (e: React.MouseEvent) => {
+        e.preventDefault();
+        // Go to /events, then scroll to the form anchor
+        router.push("/events#contact-form-section");
+    };
+    const isInternalLink =
+        linkHref && !/^([a-z][a-z0-9+.-]*:)?\/\//i.test(linkHref) === false
+            ? false
+            : !linkHref?.startsWith("http");
     const resolvedHref =
         linkHref && !/^([a-z][a-z0-9+.-]*:)?\/\//i.test(linkHref)
             ? `https://${linkHref}`
@@ -28,14 +41,23 @@ export default function EventInfoBlock({
                 <p className="text-[16px] text-mist-300">{description}</p>
             ) : null}
             {linkText && resolvedHref ? (
-                <Link
-                    href={resolvedHref}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[16px] underline text-mist-400"
-                >
-                    {linkText} {"→"}
-                </Link>
+                isInternalLink ? (
+                    <button
+                        onClick={handleCtaClick}
+                        className="text-[16px] underline text-mist-400 bg-none border-none cursor-pointer"
+                    >
+                        {linkText} {"→"}
+                    </button>
+                ) : (
+                    <Link
+                        href={resolvedHref}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[16px] underline text-mist-400"
+                    >
+                        {linkText} {"→"}
+                    </Link>
+                )
             ) : null}
         </div>
     );

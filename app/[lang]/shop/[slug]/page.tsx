@@ -40,6 +40,10 @@ const PRODUCT_QUERY = `
     images,
     image,
     stripePriceId,
+    weight,
+    length,
+    width,
+    height,
     "event": *[_type == "event" && references(^._id)][0]{
       title,
       slug

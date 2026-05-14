@@ -88,7 +88,7 @@ export default function IntroSection({
                     backgroundImage: `url(${backgroundImage || BgConcrete.src})`,
                 }}
                 initial={{ scale: 1, opacity: 0 }}
-                animate={{ scale: 1.05, opacity: 1 }}
+                animate={{ scale: 1.05, opacity: .7 }}
                 transition={{
                     duration: 0.6,
                     ease: "easeOut",

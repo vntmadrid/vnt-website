@@ -61,7 +61,7 @@ export default function HomeStickyHeader({ lang }: HomeStickyHeaderProps) {
 
     const t = {
         spaces: lang === "es" ? "Tienda" : "Store",
-        collaborate: lang === "es" ? "Colabora" : "Collaborate",
+        collaborate: lang === "es" ? "Colaborar" : "Collaborate",
         events: lang === "es" ? "Eventos" : "Events",
     };
 

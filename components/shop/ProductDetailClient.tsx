@@ -86,6 +86,10 @@ export default function ProductDetailClient({
             stock: product.stock,
             image: images[0],
             stripePriceId: product.stripePriceId,
+            weight: product.weight || 0,
+            length: product.length || 0,
+            width: product.width || 0,
+            height: product.height || 0,
         });
         openCart(); // Show cart after adding
     };

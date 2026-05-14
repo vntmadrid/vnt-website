@@ -42,7 +42,7 @@ export const event = defineType({
     }),
     defineField({
       name: 'typeInfo',
-      title: 'Type Information',
+      title: 'Event Type Information',
       type: 'object',
       fields: [
         defineField({ name: 'title', title: 'Type Title (e.g. Design Selection)', type: 'localeString' }),

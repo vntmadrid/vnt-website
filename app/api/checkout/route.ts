@@ -10,8 +10,6 @@ const stripe = new Stripe(
     },
 );
 
-type DeliveryMethod = "shipping" | "pickup";
-
 type CheckoutCartItem = {
     id: string;
     quantity: number;
@@ -21,7 +19,6 @@ type CheckoutCartItem = {
 type SanityProduct = {
     _id: string;
     price: number;
-    shippingCost?: number;
     stock: number;
     stripePriceId?: string;
     title?: Record<string, string>;
@@ -33,11 +30,21 @@ export async function POST(req: Request) {
         const {
             items,
             lang,
+            shippoRate, // This is the rate object chosen on your frontend
+            customerEmail,
             deliveryMethod,
+            address
         }: {
             items: CheckoutCartItem[];
             lang?: string;
-            deliveryMethod?: DeliveryMethod;
+            shippoRate: {
+                amount: string;
+                title: string;
+                objectId: string;
+            };
+            customerEmail?: string;
+            deliveryMethod?: string;
+            address?: any;
         } = await req.json();
 
         if (!items || items.length === 0) {
@@ -47,73 +54,33 @@ export async function POST(req: Request) {
             );
         }
 
-        const method: DeliveryMethod =
-            deliveryMethod === "pickup" ? "pickup" : "shipping";
         const safeLang = lang || "en";
 
-        // Fetch up-to-date products from Sanity to prevent price tampering
+        // 1. Fetch products from Sanity (Validation only)
         const itemIds = [...new Set(items.map((i) => i.id))];
         const sanityProducts = await client.fetch<SanityProduct[]>(
             `*[_type == "product" && _id in $itemIds] {
-        _id,
-        price,
-        shippingCost,
-        stock,
-        stripePriceId,
-        title,
-        images
-      }`,
+                _id,
+                price,
+                stock,
+                stripePriceId,
+                title,
+                images
+            }`,
             { itemIds },
         );
 
-        const productById = new Map(
-            sanityProducts.map((product) => [product._id, product]),
-        );
+        const productById = new Map(sanityProducts.map((p) => [p._id, p]));
 
-        // Validate prices and stock
-        for (const item of items) {
-            const sanityProduct = productById.get(item.id);
-
-            if (!sanityProduct) {
-                return NextResponse.json(
-                    { message: `Product ${item.id} not found` },
-                    { status: 404 },
-                );
-            }
-
-            if (!Number.isInteger(item.quantity) || item.quantity <= 0) {
-                return NextResponse.json(
-                    { message: `Invalid quantity for ${item.id}` },
-                    { status: 400 },
-                );
-            }
-
-            if (sanityProduct.stock < item.quantity) {
-                return NextResponse.json(
-                    {
-                        message: `Insufficient stock for ${sanityProduct.title?.en || item.id}`,
-                    },
-                    { status: 400 },
-                );
-            }
-        }
-
-        const host =
-            process.env.NEXT_PUBLIC_APP_URL ||
-            (process.env.VERCEL_URL
-                ? `https://${process.env.VERCEL_URL}`
-                : "http://localhost:3000");
-
-        let totalShippingCost = 0;
-
+        // 2. Build Line Items
         const lineItems: any[] = items.map((item) => {
-            const product = productById.get(item.id)!;
+            const product = productById.get(item.id);
+            if (!product || product.stock < item.quantity) {
+                throw new Error(
+                    `Product ${item.id} is invalid or out of stock`,
+                );
+            }
 
-            // Add to total shipping
-            const itemShipping = product.shippingCost || 0;
-            totalShippingCost += itemShipping * item.quantity;
-
-            // If we have a Pre-created Stripe Price ID in Sanity schema
             if (product.stripePriceId) {
                 return {
                     price: product.stripePriceId,
@@ -121,7 +88,6 @@ export async function POST(req: Request) {
                 };
             }
 
-            // Fallback: Dynamically generate price data if no ID provided in Sanity CMS
             const imageUrl = item.image ? urlFor(item.image).url() : undefined;
             const title =
                 product.title?.[safeLang] || product.title?.en || "VNT Product";
@@ -133,119 +99,60 @@ export async function POST(req: Request) {
                         name: title,
                         images: imageUrl ? [imageUrl] : undefined,
                     },
-                    unit_amount: Math.round(product.price * 100), // Stripe expects cents
+                    unit_amount: Math.round(product.price * 100),
                 },
                 quantity: item.quantity,
             };
         });
 
-        // Configure shipping options
-        let shippingOptions: any[] | undefined;
-        let shippingAddressCollection: any | undefined;
-
-        if (method === "shipping") {
-            // if need to restrict delivery location, include/remove the countries here
-            shippingAddressCollection = {
-                allowed_countries: [
-                    "AD",
-                    "AL",
-                    "AT",
-                    "BA",
-                    "BE",
-                    "BG",
-                    "CH",
-                    "CY",
-                    "CZ",
-                    "DE",
-                    "DK",
-                    "EE",
-                    "ES",
-                    "FI",
-                    "FR",
-                    "GB",
-                    "GI",
-                    "GR",
-                    "HR",
-                    "HU",
-                    "IE",
-                    "IS",
-                    "IT",
-                    "LI",
-                    "LT",
-                    "LU",
-                    "LV",
-                    "MC",
-                    "MD",
-                    "ME",
-                    "MK",
-                    "MT",
-                    "NL",
-                    "NO",
-                    "PL",
-                    "PT",
-                    "RO",
-                    "RS",
-                    "SE",
-                    "SI",
-                    "SK",
-                    "SM",
-                    "TR",
-                    "UA",
-                    "VA",
-                ],
-            };
-
-            shippingOptions = [
+        // 3. Configure the Pre-Calculated Shipping
+        // Since address is collected on frontend, we pass ONE fixed rate to Stripe
+        const shippingOptions: Stripe.Checkout.SessionCreateParams.ShippingOption[] =
+            [
                 {
                     shipping_rate_data: {
                         type: "fixed_amount",
                         fixed_amount: {
-                            amount: Math.round(totalShippingCost * 100),
+                            amount: Math.round(
+                                parseFloat(shippoRate.amount) * 100,
+                            ),
                             currency: "eur",
                         },
-                        display_name: "Standard Shipping",
+                        display_name: shippoRate.title,
                     },
                 },
             ];
-        }
 
-        // Keep metadata compact: p contains "productId:qty,productId:qty"
-        const compactPurchase = items
-            .map((i) => `${i.id}:${i.quantity}`)
-            .join(",");
+        const host =
+            process.env.NEXT_PUBLIC_APP_URL ||
+            `https://${process.env.VERCEL_URL}`;
 
-        const metadata = {
-            p: compactPurchase,
-            dm: method,
-        };
-
+        // 4. Create Session
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ["card"],
             line_items: lineItems,
             mode: "payment",
+            customer_email: customerEmail || undefined,
             success_url: `${host}/${safeLang}/shop?success=true`,
             cancel_url: `${host}/${safeLang}/shop?canceled=true`,
-            shipping_address_collection: shippingAddressCollection,
+            // Address collection is handled on your frontend, so we leave this out
             shipping_options: shippingOptions,
-            metadata,
+            metadata: {
+                p: items.map((i) => `${i.id}:${i.quantity}`).join(","),
+                shippo_id: shippoRate.objectId,
+                sr: shippoRate.objectId,                // Webhook looks for sr (shippo rate id)
+                dm: deliveryMethod || "shipping",       // Webhook looks for dm (delivery method)
+                c_name: address?.name || "",
+                a_l1: address?.street1 || "",
+                a_city: address?.city || "",
+                a_pos: address?.zip || "",
+                a_c: address?.country || "",
+            },
         });
 
-        if (!session.id) {
-            throw new Error("Could not create Stripe session");
-        }
-
-        return NextResponse.json(
-            {
-                sessionId: session.id,
-                url: session.url,
-            },
-            { status: 200 },
-        );
+        return NextResponse.json({ sessionId: session.id, url: session.url });
     } catch (error: any) {
         console.error("Stripe Checkout Error:", error);
-        return NextResponse.json(
-            { message: error.message || "Internal Server Error" },
-            { status: 500 },
-        );
+        return NextResponse.json({ message: error.message }, { status: 500 });
     }
 }
