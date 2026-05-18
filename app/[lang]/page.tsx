@@ -113,7 +113,7 @@ export default async function Home(props: {
             />
             {/* <IntroSection /> */}
 
-            <VntSpaces data={data.vntSpaces} />
+            <VntSpaces data={data.vntSpaces} lang={lang} />
             <EventsSection eventsData={data.events} lang={lang} />
 
             <CollaborateSection data={data.collaborate} />

@@ -11,6 +11,14 @@ const shippoClient = new Shippo({
 const MAX_WEIGHT_PER_BOX = 28; // kg (under 30 to account for packing material)
 const MIN_DIM = 15; // cm (minimum size for a shipping label to fit)
 
+type ShippingProduct = {
+    _id: string;
+    weight?: number;
+    length?: number;
+    width?: number;
+    height?: number;
+};
+
 export async function POST(req: Request) {
     try {
         const { address, items } = await req.json();
@@ -21,7 +29,7 @@ export async function POST(req: Request) {
 
         // 1. Fetch exact product data from Sanity
         const itemIds = [...new Set(items.map((i: any) => i.id))];
-        const sanityProducts = await client.fetch(
+        const sanityProducts = await client.fetch<ShippingProduct[]>(
             `*[_type == "product" && _id in $itemIds] { _id, weight, length, width, height }`,
             { itemIds }
         );

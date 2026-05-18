@@ -13,7 +13,7 @@ import MenuContent from "./MenuContent";
 import ConceptStoreBg from "@/public/images/ConceptStoreBG.png";
 import CoffeeGalleryBg from "@/public/images/CoffeeGalleryBg.png";
 
-export default function vntSpaces({ data }: any) {
+export default function vntSpaces({ data, lang }: any) {
     const containerRef = useRef<HTMLDivElement>(null);
     const [showCoffeeContent, setShowCoffeeContent] = useState(true);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -242,7 +242,7 @@ export default function vntSpaces({ data }: any) {
                                 className={`pointer-events-auto p-1 px-2 border-2 border-black text-base lg:text-[20px] ml-auto lg:ml-2 font-semibold hover:bg-black hover:text-white transition-colors duration-300 whitespace-nowrap shrink-0 z-10 ${isMenuOpen ? "bg-white shadow-xl" : ""}`}
                             >
                                 {isMenuOpen
-                                    ? "Close"
+                                    ? (lang === 'es' ? 'Cerca' : 'Close')
                                     : data?.menuButtonText || "View Menu"}
                             </button>
                         </motion.div>
@@ -308,7 +308,7 @@ export default function vntSpaces({ data }: any) {
                                     className={`p-1 px-2 border-2 border-black text-base font-semibold hover:bg-black hover:text-white transition-colors duration-300 whitespace-nowrap shrink-0 z-10 ml-auto`}
                                 >
                                     {isMenuOpen
-                                        ? "Close"
+                                        ? (lang === 'es' ? 'Cerca' : 'Close')
                                         : data?.menuButtonText || "View Menu"}
                                 </button>
                             </div>

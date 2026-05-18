@@ -37,7 +37,7 @@ export async function POST(req: Request) {
         }: {
             items: CheckoutCartItem[];
             lang?: string;
-            shippoRate: {
+            shippoRate?: {
                 amount: string;
                 title: string;
                 objectId: string;
@@ -55,6 +55,14 @@ export async function POST(req: Request) {
         }
 
         const safeLang = lang || "en";
+        const isShipping = deliveryMethod !== "pickup";
+
+        if (isShipping && !shippoRate) {
+            return NextResponse.json(
+                { message: "Shipping rate is required for shipping orders" },
+                { status: 400 },
+            );
+        }
 
         // 1. Fetch products from Sanity (Validation only)
         const itemIds = [...new Set(items.map((i) => i.id))];
@@ -72,27 +80,52 @@ export async function POST(req: Request) {
 
         const productById = new Map(sanityProducts.map((p) => [p._id, p]));
 
-        // 2. Build Line Items
-        const lineItems: any[] = items.map((item) => {
+        // 2. Validate inventory against current stock and build line items.
+        const unavailableItems: Array<{
+            id: string;
+            title: string;
+            requested: number;
+            available: number;
+        }> = [];
+
+        const lineItems: any[] = [];
+
+        for (const item of items) {
             const product = productById.get(item.id);
-            if (!product || product.stock < item.quantity) {
-                throw new Error(
-                    `Product ${item.id} is invalid or out of stock`,
-                );
+            if (!product) {
+                unavailableItems.push({
+                    id: item.id,
+                    title: item.id,
+                    requested: item.quantity,
+                    available: 0,
+                });
+                continue;
+            }
+
+            if (product.stock < item.quantity) {
+                unavailableItems.push({
+                    id: item.id,
+                    title:
+                        product.title?.[safeLang] || product.title?.en || item.id,
+                    requested: item.quantity,
+                    available: Math.max(product.stock, 0),
+                });
+                continue;
             }
 
             if (product.stripePriceId) {
-                return {
+                lineItems.push({
                     price: product.stripePriceId,
                     quantity: item.quantity,
-                };
+                });
+                continue;
             }
 
             const imageUrl = item.image ? urlFor(item.image).url() : undefined;
             const title =
                 product.title?.[safeLang] || product.title?.en || "VNT Product";
 
-            return {
+            lineItems.push({
                 price_data: {
                     currency: "eur",
                     product_data: {
@@ -102,26 +135,36 @@ export async function POST(req: Request) {
                     unit_amount: Math.round(product.price * 100),
                 },
                 quantity: item.quantity,
-            };
-        });
+            });
+        }
 
-        // 3. Configure the Pre-Calculated Shipping
-        // Since address is collected on frontend, we pass ONE fixed rate to Stripe
-        const shippingOptions: Stripe.Checkout.SessionCreateParams.ShippingOption[] =
-            [
+        if (unavailableItems.length > 0) {
+            return NextResponse.json(
                 {
-                    shipping_rate_data: {
-                        type: "fixed_amount",
-                        fixed_amount: {
-                            amount: Math.round(
-                                parseFloat(shippoRate.amount) * 100,
-                            ),
-                            currency: "eur",
-                        },
-                        display_name: shippoRate.title,
-                    },
+                    message: "Some items in your cart are no longer available.",
+                    unavailableItems,
                 },
-            ];
+                { status: 409 },
+            );
+        }
+
+        // 3. Configure shipping only for shipped orders.
+        const shippingOptions = isShipping && shippoRate
+            ? [
+                  {
+                      shipping_rate_data: {
+                          type: "fixed_amount" as const,
+                          fixed_amount: {
+                              amount: Math.round(
+                                  parseFloat(shippoRate.amount) * 100,
+                              ),
+                              currency: "eur",
+                          },
+                          display_name: shippoRate.title,
+                      },
+                  },
+              ]
+            : undefined;
 
         const host =
             process.env.NEXT_PUBLIC_APP_URL ||
@@ -135,12 +178,11 @@ export async function POST(req: Request) {
             customer_email: customerEmail || undefined,
             success_url: `${host}/${safeLang}/shop?success=true`,
             cancel_url: `${host}/${safeLang}/shop?canceled=true`,
-            // Address collection is handled on your frontend, so we leave this out
-            shipping_options: shippingOptions,
+            ...(shippingOptions ? { shipping_options: shippingOptions } : {}),
             metadata: {
                 p: items.map((i) => `${i.id}:${i.quantity}`).join(","),
-                shippo_id: shippoRate.objectId,
-                sr: shippoRate.objectId,                // Webhook looks for sr (shippo rate id)
+                shippo_id: shippoRate?.objectId || "",
+                sr: shippoRate?.objectId || "",                // Webhook looks for sr (shippo rate id)
                 dm: deliveryMethod || "shipping",       // Webhook looks for dm (delivery method)
                 c_name: address?.name || "",
                 a_l1: address?.street1 || "",

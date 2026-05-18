@@ -118,14 +118,45 @@ export default function CartDrawer({ lang }: { lang: string }) {
                     items, 
                     lang, 
                     deliveryMethod,
-                    shippoRate: selectedRate,
+                    shippoRate: deliveryMethod === "shipping" ? selectedRate : undefined,
                     customerEmail: address.email,
                     address
                 }),
             });
             const data = await res.json();
 
-            if (!res.ok) throw new Error(data.message || "Checkout failed");
+            if (!res.ok) {
+                if (res.status === 409 && Array.isArray(data.unavailableItems)) {
+                    const unavailableIds = new Set<string>(
+                        data.unavailableItems.map((item: { id: string }) => item.id),
+                    );
+
+                    data.unavailableItems.forEach((item: { id: string }) => {
+                        removeItem(item.id);
+                    });
+
+                    setCheckoutStep("cart");
+                    resetRates();
+
+                    const itemLabels = data.unavailableItems
+                        .map((item: { title: string }) => item.title)
+                        .join(", ");
+
+                    alert(
+                        lang === "es"
+                            ? `Algunos artículos ya no están disponibles y se han quitado del carrito: ${itemLabels}`
+                            : `Some items are no longer available and were removed from your cart: ${itemLabels}`,
+                    );
+
+                    if (items.length - unavailableIds.size <= 0) {
+                        closeCart();
+                    }
+
+                    return;
+                }
+
+                throw new Error(data.message || "Checkout failed");
+            }
 
             if (data.url) {
                 // Set a flag in localStorage to track checkout completion
@@ -253,7 +284,7 @@ export default function CartDrawer({ lang }: { lang: string }) {
 
                                                 {/* Quantity / Subtotal */}
                                                 <div className="flex justify-between items-end">
-                                                    <div className="flex items-center gap-3 bg-white/5 rounded-full px-2 py-1 border border-white/10 text-sm">
+                                                    <div className="flex items-center gap-3 bg-white/5 rounded-sm px-2 py-1 border border-white/10 text-sm">
                                                         <button
                                                             onClick={() =>
                                                                 updateQuantity(
@@ -313,12 +344,12 @@ export default function CartDrawer({ lang }: { lang: string }) {
                                     <span className="text-white/60 text-sm tracking-tighter uppercase font-medium">
                                         {t.delivery}
                                     </span>
-                                    <div className="flex gap-2">
+                                    <div className="flex gap-2 mt-1">
                                         <button
-                                            onClick={() =>
-                                                setDeliveryMethod("shipping")
-                                            }
-                                            className={`flex-1 py-3 text-sm rounded-lg border transition-colors ${
+                                            onClick={() => {
+                                                setDeliveryMethod("shipping");
+                                            }}
+                                            className={`flex-1 py-3 text-sm rounded-sm border transition-colors ${
                                                 deliveryMethod === "shipping"
                                                     ? "bg-white text-black border-white"
                                                     : "bg-transparent text-white/60 border-white/20 hover:border-white/50"
@@ -327,10 +358,12 @@ export default function CartDrawer({ lang }: { lang: string }) {
                                             {t.ship}
                                         </button>
                                         <button
-                                            onClick={() =>
-                                                setDeliveryMethod("pickup")
-                                            }
-                                            className={`flex-1 py-3 text-sm rounded-lg border transition-colors ${
+                                            onClick={() => {
+                                                setDeliveryMethod("pickup");
+                                                setSelectedRate(null);
+                                                resetRates();
+                                            }}
+                                            className={`flex-1 py-3 text-sm rounded-sm border transition-colors ${
                                                 deliveryMethod === "pickup"
                                                     ? "bg-white text-black border-white"
                                                     : "bg-transparent text-white/60 border-white/20 hover:border-white/50"
@@ -350,7 +383,7 @@ export default function CartDrawer({ lang }: { lang: string }) {
                                 <button
                                     onClick={handleCheckoutInit}
                                     disabled={isCheckingOut}
-                                    className="w-full py-4 bg-white text-black rounded-full font-medium tracking-tighter uppercase hover:bg-white/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                                    className="w-full py-4 bg-white text-black rounded-sm font-medium tracking-tighter uppercase hover:bg-white/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                                 >
                                     {isCheckingOut ? (
                                         <>
@@ -441,7 +474,7 @@ export default function CartDrawer({ lang }: { lang: string }) {
                                                             className={`flex items-center justify-between p-4 border rounded-lg cursor-pointer transition-colors ${selectedRate?.objectId === rate.objectId ? 'border-white bg-white/5' : 'border-white/20 hover:border-white/40'}`}
                                                         >
                                                             <div className="flex items-center gap-4">
-                                                                <div className={`flex-shrink-0 w-4 h-4 rounded-full border flex flex-col items-center justify-center ${selectedRate?.objectId === rate.objectId ? 'border-white' : 'border-white/40'}`}>
+                                                                <div className={`shrink-0 w-4 h-4 rounded-full border flex flex-col items-center justify-center ${selectedRate?.objectId === rate.objectId ? 'border-white' : 'border-white/40'}`}>
                                                                     {selectedRate?.objectId === rate.objectId && <div className="w-2 h-2 bg-white rounded-full" />}
                                                                 </div>
                                                                 <div className="flex flex-col">
@@ -465,12 +498,19 @@ export default function CartDrawer({ lang }: { lang: string }) {
                                 <div className="mt-auto pt-6">
                                     <div className="flex justify-between items-center mb-6 text-lg tracking-tighter">
                                         <span className="text-white/60">{lang === 'es' ? 'TOTAL' : 'TOTAL'}</span>
-                                        <span>€{(getTotal() + (selectedRate ? parseFloat(selectedRate.amount) : 0)).toFixed(2)}</span>
+                                        <span>
+                                            €{(
+                                                getTotal() +
+                                                (deliveryMethod === "shipping" && selectedRate
+                                                    ? parseFloat(selectedRate.amount)
+                                                    : 0)
+                                            ).toFixed(2)}
+                                        </span>
                                     </div>
                                     <button 
                                         onClick={handleCheckout} 
                                         disabled={isCheckingOut || (!selectedRate)} 
-                                        className="w-full py-4 bg-white text-black rounded-full font-medium tracking-tighter uppercase hover:bg-white/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                                        className="w-full py-4 bg-white text-black rounded-sm font-medium tracking-tighter uppercase hover:bg-white/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                                     >
                                         {isCheckingOut ? <><Loader2 size={18} className="animate-spin" /> {t.processing}</> : (lang === 'es' ? 'Ir al Pago' : 'Proceed to Payment')}
                                     </button>

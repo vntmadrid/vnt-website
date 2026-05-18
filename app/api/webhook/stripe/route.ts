@@ -116,7 +116,7 @@ export async function POST(req: Request) {
         let shippoTransactionId = "";
 
         // 3. Purchase Shippo Label
-        if (shippoRateId && shippoRateId.length > 10) {
+        if (deliveryMethodFromMetadata === "shipping" && shippoRateId && shippoRateId.length > 10) {
             try {
                 console.log(`Purchasing Shippo label for rate: ${shippoRateId}`);
                 const transactionResult = await shippoClient.transactions.create({
