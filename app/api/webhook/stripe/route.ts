@@ -116,31 +116,9 @@ export async function POST(req: Request) {
         let shippoTransactionId = "";
 
         // 3. Purchase Shippo Label
-        if (deliveryMethodFromMetadata === "shipping" && shippoRateId && shippoRateId.length > 10) {
-            try {
-                console.log(`Purchasing Shippo label for rate: ${shippoRateId}`);
-                const transactionResult = await shippoClient.transactions.create({
-                    rate: shippoRateId,
-                    async: false
-                });
-                
-                console.log(`\n\n--- RAW SHIPPO TRANSACTION RESULT LIMIT ---`);
-                console.log(JSON.stringify(transactionResult, null, 2));
-                console.log(`--- END SHIPPO RESULT ---\n\n`);
-
-                shippoTransactionId = transactionResult.objectId || "";
-
-                if (transactionResult.status === "SUCCESS") {
-                    shippoLabelUrl = transactionResult.labelUrl || "";
-                    shippoTrackingNumber = transactionResult.trackingNumber || "";
-                    console.log(`Shippo Purchase Success! Tracking: ${shippoTrackingNumber}`);
-                } else {
-                    console.warn(`Shippo Purchase Failed / Pending:`, transactionResult.messages);
-                }
-            } catch (err) {
-                console.error("Error creating Shippo transaction:", err);
-            }
-        }
+        // Shippo automatic label purchasing disabled.
+        // Labels can be purchased manually later or via a separate admin workflow.
+        // Keeping placeholders empty to avoid accidental label creation.
 
         console.log(`Creating order document: ${orderNumber}`);
 

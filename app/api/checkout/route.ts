@@ -175,7 +175,7 @@ export async function POST(req: Request) {
             payment_method_types: ["card"],
             line_items: lineItems,
             mode: "payment",
-            customer_email: customerEmail || undefined,
+            ...(isShipping && customerEmail ? { customer_email: customerEmail } : {}),
             success_url: `${host}/${safeLang}/shop?success=true`,
             cancel_url: `${host}/${safeLang}/shop?canceled=true`,
             ...(shippingOptions ? { shipping_options: shippingOptions } : {}),
