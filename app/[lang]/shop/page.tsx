@@ -2,6 +2,8 @@ import { Metadata } from "next";
 import { sanityFetch } from "@/sanity/lib/live";
 import { Suspense } from "react";
 
+export const revalidate = 10;
+
 export async function generateMetadata(props: {
     params: Promise<{ lang: string }>;
 }): Promise<Metadata> {
