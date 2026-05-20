@@ -20,7 +20,7 @@ export function useShippingRates() {
         city: "",
         state: "",
         zip: "",
-        country: "ES",
+        country: "",
         email: "",
         phone: "",
     });
