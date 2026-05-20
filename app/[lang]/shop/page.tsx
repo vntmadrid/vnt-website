@@ -2,7 +2,8 @@ import { Metadata } from "next";
 import { sanityFetch } from "@/sanity/lib/live";
 import { Suspense } from "react";
 
-export const revalidate = 10;
+export const revalidate = 0;
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata(props: {
     params: Promise<{ lang: string }>;

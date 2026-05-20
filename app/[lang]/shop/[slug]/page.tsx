@@ -7,6 +7,9 @@ import { SanityLive } from "@/sanity/lib/live";
 import { Metadata } from "next";
 import { client } from "@/sanity/lib/client";
 
+export const revalidate = 0;
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({
     params,
 }: {
