@@ -20,7 +20,7 @@ export default function TalkToUsForm({ lang }: { lang: "en" | "es" }) {
     const t =
         lang === "es"
             ? {
-                  formTitle: "Colabora_",
+                  formTitle: "Colaborar_",
                   namePlaceholder: "Nombre*",
                   companyPlaceholder: "Empresa",
                   emailPlaceholder: "Correo*",
